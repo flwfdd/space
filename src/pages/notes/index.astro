@@ -1,10 +1,14 @@
 ---
 import NotesLayout from "@/layouts/NotesLayout.astro";
+import { formatDate } from "@/lib/fotmat";
 import { getCollection } from "astro:content";
 
-const notes = (await getCollection("notes")).filter(
-  (note) => note.data?.publish !== false,
-);
+const notes = (await getCollection("notes"))
+  .filter((note) => note.data?.publish !== false)
+  .sort(
+    (a, b) =>
+      new Date(b.data.updated).getTime() - new Date(a.data.updated).getTime(),
+  );
 ---
 
 <NotesLayout
@@ -12,116 +16,26 @@ const notes = (await getCollection("notes")).filter(
   description="我的学习笔记和思考记录"
   showToc={false}
 >
-  <div class="text-center mb-12">
-    <div class="inline-flex items-center space-x-4 mb-6">
-      <div
-        class="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center"
-      >
-        <span class="text-white text-2xl">📚</span>
-      </div>
-      <h1 class="text-4xl font-bold text-gray-900">我的笔记本</h1>
-      <div
-        class="w-12 h-12 bg-pink-400 rounded-lg flex items-center justify-center subtle-bounce"
-      >
-        <span class="text-white text-2xl">✨</span>
-      </div>
-    </div>
-
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-      欢迎来到我的知识花园 🌸 这里记录着学习路上的点点滴滴，
-      每一篇笔记都是思考的结晶。请在左侧选择您感兴趣的内容开始阅读～
-    </p>
-  </div>
-
-  <div class="lg:hidden mb-8">
-    <div class="bg-gray-50 p-6 rounded-lg">
-      <h2
-        class="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2"
-      >
-        <span>📱</span>
-        <span>移动端导航</span>
-      </h2>
-      <p class="text-gray-600 mb-4">点击左下角的菜单按钮可以打开笔记目录</p>
-
-      <div class="space-y-3">
-        <h3 class="font-semibold text-gray-700">最近更新的笔记：</h3>
-        <div class="space-y-2">
-          {
-            notes.slice(0, 5).map((note) => (
-              <a
-                href={`/notes/${note.id}`}
-                class="
-                
-                block p-3 rounded-lg
-                hover:border-cyan-300
-                transition-all duration-200
-              "
-              >
-                <div class="flex items-center space-x-3">
-                  <svg
-                    class="w-4 h-4 text-pink-400 flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                  </svg>
-                  <span class="font-medium text-gray-800">
-                    {note.data?.title || note.id}
-                  </span>
-                </div>
-              </a>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="hidden lg:block">
-    <div class="bg-gray-50 p-8 rounded-lg text-center">
-      <div class="mb-6">
-        <svg
-          class="w-24 h-24 mx-auto text-gray-300"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
-          ></path>
-        </svg>
-      </div>
-
-      <h2 class="text-2xl font-bold text-gray-700 mb-4">
-        请从左侧选择一篇笔记开始阅读
-      </h2>
-
-      <div class="space-y-4 max-w-md mx-auto">
-        <div class="flex items-center space-x-3 text-gray-600">
-          <div
-            class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center"
-          >
-            <span class="text-sm">📁</span>
-          </div>
-          <span>文件夹可以展开和收起</span>
-        </div>
-
-        <div class="flex items-center space-x-3 text-gray-600">
-          <div
-            class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center"
-          >
-            <span class="text-sm">📝</span>
-          </div>
-          <span>点击文件名可以阅读内容</span>
-        </div>
-
-        <div class="flex items-center space-x-3 text-gray-600">
-          <div
-            class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center"
-          >
-            <span class="text-sm">📖</span>
-          </div>
-          <span>右侧会显示文章目录大纲</span>
-        </div>
+  <div class="space-y-3">
+    <h1 class="font-bold text-2xl text-center">最近更新</h1>
+    <div class="bg-white dark:bg-cyan-900/20 p-6 rounded-xl">
+      <div class="space-y-2">
+        {
+          notes.slice(0, 10).map((note) => (
+            <a
+              class="flex items-center justify-between p-3 rounded-lg
+              
+                hover:text-cyan-500 hover:bg-cyan-500/10
+                transition-all duration-200"
+              href={`/notes/${note.id}`}
+            >
+              <span>{note.data?.title || note.id}</span>
+              <span class="text-sm text-gray-500">
+                {formatDate(note.data.created)}
+              </span>
+            </a>
+          ))
+        }
       </div>
     </div>
   </div>

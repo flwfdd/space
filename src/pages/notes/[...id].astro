@@ -1,6 +1,7 @@
 ---
 import MarkdownContent from "@/components/notes/MarkdownContent.astro";
 import NotesLayout from "@/layouts/NotesLayout.astro";
+import { formatDate } from "@/lib/fotmat";
 import { normalizePath } from "@/lib/path-utils";
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
@@ -28,9 +29,9 @@ const description = note.data?.description || `${title} - 学习笔记`;
 
 let localCover: Promise<{ default: ImageMetadata }> | undefined;
 let remoteCover: string | undefined;
-if (note.data?.cover) {
-  if (note.data.cover.startsWith("http")) {
-    remoteCover = note.data.cover;
+if (note.data?.img) {
+  if (note.data.img.startsWith("http")) {
+    remoteCover = note.data.img;
   } else {
     const images = import.meta.glob<{ default: ImageMetadata }>(
       "/src/data/notes/**/*.{jpeg,jpg,png,gif,webp}",
@@ -39,10 +40,10 @@ if (note.data?.cover) {
     // 使用路径规范化函数
     const imgPath = normalizePath(
       "/src/data/notes/" + note.id.split("/").slice(0, -1).join("/"),
-      note.data?.cover,
+      note.data?.img,
     );
 
-    if (note.data?.cover && !images[imgPath])
+    if (note.data?.img && !images[imgPath])
       throw new Error(
         `"${imgPath}" does not exist in glob: "src/data/notes/**/*.{jpeg,jpg,png,gif,webp}"`,
       );
@@ -57,7 +58,7 @@ if (note.data?.cover) {
   headings={headings}
   currentPath={note.id}
 >
-  <div class="mb-8 pb-2 border-b border-gray-300 dark:border-gray-700">
+  <div class="mb-8 pb-2">
     {
       (localCover || remoteCover) && (
         <div class="relative rounded-xl overflow-hidden">
@@ -135,12 +136,10 @@ if (note.data?.cover) {
           <div class="flex items-center space-x-2">
             <Icon name="mdi:calendar" class="w-4 h-4 min-w-4 min-h-4" />
             <span>
-              {note.data?.created &&
-                `创建于 ${new Date(note.data.created).toLocaleDateString("zh-CN")}`}
+              {note.data?.created && `创建于 ${formatDate(note.data.created)}`}
             </span>
             <span>
-              {note.data?.updated &&
-                `更新于 ${new Date(note.data.updated).toLocaleDateString("zh-CN")}`}
+              {note.data?.updated && `更新于 ${formatDate(note.data.updated)}`}
             </span>
           </div>
         )
@@ -172,18 +171,22 @@ if (note.data?.cover) {
     <Content />
   </MarkdownContent>
 
-  <div class="mt-12 pt-8 border-t border-gray-200">
-    <div class="flex items-center justify-between">
+  <div class="mt-12">
+    <div class="flex items-center justify-between py-6">
       <a
         href="/notes"
-        class="inline-flex items-center space-x-2 px-4 py-2 rounded-lg
-          text-gray-600 hover:text-cyan-600"
+        class="inline-flex items-center space-x-2 hover:text-cyan-500"
       >
-        <Icon name="mdi:arrow-left" class="w-4 h-4" />
+        <Icon name="mdi:arrow-left" class="size-4" />
         <span>返回笔记列表</span>
       </a>
-
-      <div class="text-sm text-gray-500">📖 阅读愉快</div>
+      <button
+        class="inline-flex items-center space-x-2 hover:text-cyan-500 cursor-pointer"
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+      >
+        <Icon name="mdi:arrow-up" class="size-4" />
+        <span>回到顶部</span>
+      </button>
     </div>
   </div>
 </NotesLayout>

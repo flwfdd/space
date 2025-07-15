@@ -1,12 +1,9 @@
 ---
 import ThemeToggle from "@/components/layouts/ThemeToggle.astro";
+import { Icon } from "astro-icon/components";
 const { class: className = "" } = Astro.props;
 
 const menus = [
-  {
-    name: "首页",
-    href: "/",
-  },
   {
     name: "笔记",
     href: "/notes",
@@ -25,16 +22,13 @@ const menus = [
 `}
 >
   <nav class="max-w-6xl mx-auto flex items-center justify-between">
-    <div class="flex items-center space-x-4">
-      <div
-        class="w-10 h-10 bg-cyan-500 rounded-lg flex items-center justify-center"
-      >
-        <span class="text-white font-bold text-lg">F</span>
-      </div>
+    <div class="flex items-center space-x-2">
+      <ThemeToggle />
       <a href="/" class="text-2xl font-bold"> flwfdd'Space </a>
     </div>
 
-    <div class="flex items-center space-x-2">
+    <!-- 桌面端导航菜单 -->
+    <div class="hidden sm:flex items-center space-x-2">
       <ul class="flex space-x-2">
         {
           menus.map((menu) => (
@@ -42,11 +36,9 @@ const menus = [
               <a
                 href={menu.href}
                 class="
-              px-4 py-2 rounded-lg
-              text-gray-700 font-medium
-              hover:text-cyan-600 hover:bg-cyan-50
-              dark:text-gray-300 dark:hover:text-cyan-400
-              transition-all duration-200
+              px-4 py-2 rounded-lg font-bold
+              hover:text-cyan-600 hover:bg-cyan-500/10
+              transition-all duration-100
             "
               >
                 {menu.name}
@@ -55,7 +47,90 @@ const menus = [
           ))
         }
       </ul>
-      <ThemeToggle />
     </div>
+
+    <!-- 移动端菜单按钮 -->
+    <button
+      id="mobile-menu-button"
+      class="sm:hidden flex justify-center items-center"
+      aria-label="打开菜单"
+    >
+      <Icon name="mdi:menu" class="size-6" />
+    </button>
   </nav>
+
+  <!-- 移动端全屏模糊遮罩菜单 -->
+  <div
+    id="mobile-menu-overlay"
+    class="fixed inset-0 bg-cyan-50/50 dark:bg-cyan-900/50 backdrop-blur-lg z-50 opacity-0 pointer-events-none transition-all duration-500 md:hidden flex items-center justify-center"
+  >
+    <button
+      id="mobile-menu-close"
+      class="absolute top-8 right-8 size-6"
+      aria-label="关闭菜单"
+    >
+      <Icon name="mdi:close" class="size-6" />
+    </button>
+    <div id="mobile-menu-content" class="rounded-2xl p-8 max-w-sm w-full mx-4">
+      <nav>
+        <ul class="space-y-4">
+          {
+            menus.map((menu) => (
+              <li>
+                <a
+                  href={menu.href}
+                  class="block px-6 w-full rounded-xl font-bold text-lg text-center mobile-menu-link"
+                >
+                  {menu.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
 </header>
+
+<script>
+  // 移动端菜单交互逻辑
+  const mobileMenuButton = document.getElementById("mobile-menu-button");
+  const mobileMenuOverlay = document.getElementById("mobile-menu-overlay");
+  const mobileMenuContent = document.getElementById("mobile-menu-content");
+  const mobileMenuClose = document.getElementById("mobile-menu-close");
+  const mobileMenuLinks = document.querySelectorAll(".mobile-menu-link");
+
+  function openMobileMenu() {
+    if (!mobileMenuOverlay || !mobileMenuContent || !mobileMenuButton) return;
+
+    // 显示遮罩
+    mobileMenuOverlay.classList.remove("opacity-0", "pointer-events-none");
+    // 显示菜单内容（缩放和透明度动画）
+    mobileMenuContent.classList.remove("scale-95", "opacity-0");
+    mobileMenuContent.classList.add("scale-100", "opacity-100");
+  }
+
+  function closeMobileMenu() {
+    if (!mobileMenuOverlay || !mobileMenuContent || !mobileMenuButton) return;
+
+    // 隐藏遮罩
+    mobileMenuOverlay.classList.add("opacity-0", "pointer-events-none");
+    // 隐藏菜单内容（缩放和透明度动画）
+    mobileMenuContent.classList.remove("scale-100", "opacity-100");
+    mobileMenuContent.classList.add("scale-95", "opacity-0");
+  }
+
+  // 事件监听器
+  mobileMenuButton?.addEventListener("click", openMobileMenu);
+  mobileMenuClose?.addEventListener("click", closeMobileMenu);
+  mobileMenuOverlay?.addEventListener("click", (e) => {
+    if (e.target === mobileMenuOverlay) {
+      closeMobileMenu();
+    }
+  });
+
+  // 点击菜单链接后关闭菜单
+  mobileMenuLinks.forEach((link) => {
+    link.addEventListener("click", closeMobileMenu);
+  });
+</script>

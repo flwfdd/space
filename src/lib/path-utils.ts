@@ -47,4 +47,4 @@ export function isAbsolutePath(filePath: string): boolean {
  */
 export function resolvePath(filePath: string): string {
     return path.resolve(filePath);
-} 
+}

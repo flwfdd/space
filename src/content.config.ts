@@ -1,6 +1,6 @@
 // 1. 从 `astro:content` 导入工具函数
-import { ObsidianMdLoader } from 'astro-loader-obsidian';
-import { defineCollection } from 'astro:content';
+import { ObsidianDocumentSchema, ObsidianMdLoader } from 'astro-loader-obsidian';
+import { defineCollection, z } from 'astro:content';
 
 // 2. 导入加载器
 
@@ -9,6 +9,9 @@ const notes = defineCollection({
 	loader: ObsidianMdLoader({
 		base: 'src/data/notes',
 		removeH1: false,
+	}),
+	schema: () => ObsidianDocumentSchema.extend({
+		img: z.string().optional(),
 	}),
 });
 
