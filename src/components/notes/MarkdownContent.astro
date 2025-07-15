@@ -1,0 +1,54 @@
+---
+// Markdown内容样式组件 - 使用 Tailwind Typography
+---
+
+<div
+  class="prose max-w-none dark:prose-invert
+  prose-p:font-medium prose-strong:font-bold
+  prose-h1:text-center
+  prose-blockquote:border-l-cyan-500/50
+  prose-a:text-cyan-600 prose-a:no-underline prose-a:hover:underline
+  prose-img:rounded-md prose-img:mx-auto prose-img:max-h-96
+  prose-figure:text-center prose-figcaption:text-sm prose-figcaption:text-gray-500 prose-figcaption:mt-2"
+>
+  <slot />
+</div>
+
+<style is:global>
+  /* 行内代码样式 */
+  .prose code::before,
+  .prose code::after {
+    content: none;
+  }
+  .prose code:not(pre code) {
+    font-size: 0.875rem;
+    color: var(--color-cyan-600);
+    background-color: color-mix(
+      in srgb,
+      var(--color-cyan-500) 10%,
+      transparent
+    );
+    padding: 0.125em 0.25em;
+    border-radius: 0.25em;
+  }
+  /* 给 h2 左下角加一个 cyan 色小圆点 */
+  .prose h2 {
+    position: relative;
+  }
+  .prose h2::after {
+    content: "";
+    position: absolute;
+    left: -0.15em;
+    bottom: -0.1em;
+    width: 0.75em;
+    height: 0.75em;
+    background-color: color-mix(
+      in srgb,
+      var(--color-cyan-500) 50%,
+      transparent
+    );
+    border-radius: 50%;
+    display: inline-block;
+    z-index: -1;
+  }
+</style>

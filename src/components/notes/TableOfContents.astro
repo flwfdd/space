@@ -1,0 +1,144 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  headings?: { depth: number; slug: string; text: string }[];
+  class?: string;
+}
+
+const { headings = [] } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <aside class="sticky top-6 max-h-screen flex flex-col select-none">
+      <h3 class="flex-shrink-0 flex space-x-3 text-lg font-bold my-4 items-center">
+        <span class="w-8 h-8 bg-cyan-300 border-4 border-cyan-200 dark:bg-cyan-700 dark:border-cyan-800 rounded-lg flex items-center justify-center">
+          📖
+        </span>
+        <span>大纲</span>
+      </h3>
+
+      <nav class="flex-1 overflow-y-auto">
+        <ul class="mb-20">
+          {headings.map((heading) => (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                data-heading-id={heading.slug}
+                class={`
+                  toc-link block
+                  hover:text-cyan-500
+                  dark:hover:text-cyan-300
+                  transition-all duration-200
+                  ${heading.depth === 1 && "text-base mt-2"}
+                  ${heading.depth === 2 && "ml-3 test-base mt-2"}
+                  ${heading.depth === 3 && "ml-6 text-sm mt-1"}
+                  ${heading.depth === 4 && "ml-9 text-sm mt-1"}
+                  ${heading.depth === 5 && "ml-12 text-xs"}
+                  ${heading.depth >= 6 && "ml-15 text-xs"}
+                `}
+              >
+                <span class="truncate">{heading.text}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}
+
+<script>
+  function initTOC() {
+    const links = document.querySelectorAll(".toc-link");
+    const headings = Array.from(links)
+      .map((link) => {
+        const href = link.getAttribute("href");
+        return href ? document.querySelector(href) : null;
+      })
+      .filter((heading): heading is Element => heading !== null);
+
+    if (headings.length === 0) return;
+
+    let currentActive = "";
+
+    function updateActiveHeading() {
+      let activeHeading = "";
+      let minDistance = Infinity;
+
+      const viewportCenter = window.innerHeight / 2;
+
+      headings.forEach((heading) => {
+        if (!heading) return;
+        const rect = heading.getBoundingClientRect();
+
+        // 如果标题在视口内
+        if (rect.top <= window.innerHeight) {
+          const distanceFromCenter = Math.abs(rect.top - viewportCenter);
+          if (distanceFromCenter < minDistance) {
+            minDistance = distanceFromCenter;
+            activeHeading = heading.id;
+          }
+        }
+      });
+
+      if (activeHeading && activeHeading !== currentActive) {
+        currentActive = activeHeading;
+
+        links.forEach((link) => {
+          const headingId = link.getAttribute("data-heading-id");
+          const isActive = headingId === activeHeading;
+
+          if (isActive) {
+            link.classList.add("text-cyan-500", "dark:text-cyan-300");
+
+            // 确保活跃项在大纲中可见
+            const tocContainer = link.closest("nav");
+            if (tocContainer) {
+              // 只滚动目录容器，不影响主页面
+              const containerRect = tocContainer.getBoundingClientRect();
+              const linkRect = link.getBoundingClientRect();
+
+              // 计算需要滚动的距离
+              const scrollTop = tocContainer.scrollTop;
+              const targetScrollTop =
+                scrollTop +
+                linkRect.top -
+                containerRect.top -
+                containerRect.height / 2 +
+                linkRect.height / 2;
+
+              tocContainer.scrollTo({
+                top: targetScrollTop,
+                behavior: "smooth",
+              });
+            }
+          } else {
+            link.classList.remove("text-cyan-500", "dark:text-cyan-300");
+          }
+        });
+      }
+    }
+
+    // 节流
+    let updating = false;
+    const observer = new IntersectionObserver(() => {
+      if (!updating) {
+        updating = true;
+        updateActiveHeading();
+        setTimeout(() => (updating = false), 100);
+      }
+    });
+    headings.forEach((heading) => {
+      if (heading) {
+        observer.observe(heading);
+      }
+    });
+    // 初始更新
+    updateActiveHeading();
+  }
+
+  // 页面加载完成后初始化
+  document.addEventListener("DOMContentLoaded", initTOC);
+</script>

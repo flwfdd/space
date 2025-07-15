@@ -1,11 +1,77 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "@/layouts/Layout.astro";
 ---
 
 <Layout>
-	<Welcome />
+  <!-- 最外层容器 -->
+  <div
+    class="size-[calc(min(80vw,80vh))] sm:size-[calc(min(50vw,50vh))] mx-auto bg-cyan-500/50 rounded-3xl relative"
+  >
+    <!-- 占位层，保持整体高度 -->
+    <div class="w-full h-[calc(min(80vw,80vh))] sm:h-[calc(min(50vw,50vh))]">
+    </div>
+
+    <!-- 同心圆，全部绝对定位并居中 -->
+    <div
+      id="c1"
+      class="size-[90%] rounded-full bg-white dark:bg-cyan-300/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+    </div>
+
+    <div
+      id="c2"
+      class="size-[70%] rounded-full bg-cyan-300/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+    </div>
+
+    <div
+      id="c3"
+      class="size-[50%] rounded-full bg-cyan-300/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+    </div>
+
+    <div
+      id="c4"
+      class="size-[30%] rounded-full bg-cyan-300/30 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    >
+    </div>
+
+    <!-- 标题文字 -->
+    <div
+      id="title"
+      class="absolute inset-0 flex flex-col items-center justify-center text-center text-3xl font-extrabold"
+    >
+      欢迎来到
+      <br />
+      范滇东的美丽新世界
+    </div>
+  </div>
+
+  <!-- 动画变为线性 -->
+  <style>
+    #c1 {
+      animation: c1 4.24s infinite;
+    }
+    #c2 {
+      animation: c1 2.24s infinite;
+    }
+    #c3 {
+      animation: c1 3.24s infinite;
+    }
+    #c4 {
+      animation: c1 2.42s infinite;
+    }
+
+    @keyframes c1 {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(0.84);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
 </Layout>

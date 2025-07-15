@@ -1,0 +1,189 @@
+---
+import MarkdownContent from "@/components/notes/MarkdownContent.astro";
+import NotesLayout from "@/layouts/NotesLayout.astro";
+import { normalizePath } from "@/lib/path-utils";
+import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes");
+  return notes
+    .filter((note) => note.data?.publish !== false)
+    .map((note) => ({
+      params: { id: note.id },
+      props: { note },
+    }));
+}
+
+const { note } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(note);
+
+let title = note.data?.title;
+// 判断标题是否是一级标题自动生成的
+if (!title || (headings.length && headings[0].text === title)) {
+  title = note.id.replace(".md", "").split("/").pop() || "";
+}
+const description = note.data?.description || `${title} - 学习笔记`;
+
+let localCover: Promise<{ default: ImageMetadata }> | undefined;
+let remoteCover: string | undefined;
+if (note.data?.cover) {
+  if (note.data.cover.startsWith("http")) {
+    remoteCover = note.data.cover;
+  } else {
+    const images = import.meta.glob<{ default: ImageMetadata }>(
+      "/src/data/notes/**/*.{jpeg,jpg,png,gif,webp}",
+    );
+
+    // 使用路径规范化函数
+    const imgPath = normalizePath(
+      "/src/data/notes/" + note.id.split("/").slice(0, -1).join("/"),
+      note.data?.cover,
+    );
+
+    if (note.data?.cover && !images[imgPath])
+      throw new Error(
+        `"${imgPath}" does not exist in glob: "src/data/notes/**/*.{jpeg,jpg,png,gif,webp}"`,
+      );
+    localCover = images[imgPath]();
+  }
+}
+---
+
+<NotesLayout
+  title={`${title} - flwfdd's space`}
+  description={description}
+  headings={headings}
+  currentPath={note.id}
+>
+  <div class="mb-8 pb-2 border-b border-gray-300 dark:border-gray-700">
+    {
+      (localCover || remoteCover) && (
+        <div class="relative rounded-xl overflow-hidden">
+          {/* 封面图片 */}
+          <div class="w-full h-64 sm:h-96">
+            {localCover && (
+              <Image
+                src={localCover}
+                alt={title}
+                class="w-full h-full object-cover"
+              />
+            )}
+            {remoteCover && (
+              <img
+                src={remoteCover}
+                alt={title}
+                class="w-full h-full object-cover"
+              />
+            )}
+          </div>
+
+          {/* 渐变遮罩 */}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+          {/* 标题叠加 */}
+          <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-white">
+              {title}
+            </h1>
+            {note.data?.description && (
+              <p class="text-white/80 mt-2">{note.data.description}</p>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    {/* 如果没有封面图，显示普通标题 */}
+    {
+      !(localCover || remoteCover) && (
+        <h1 class="text-2xl md:text-3xl font-extrabold">{title}</h1>
+      )
+    }
+
+    {/* 如果没有封面图，显示描述 */}
+    {
+      !(localCover || remoteCover) && note.data?.description && (
+        <p class="text-gray-500 mt-2">{note.data.description}</p>
+      )
+    }
+
+    <div class="flex flex-wrap items-center gap-4 mt-6 text-xs text-gray-500">
+      {
+        note.data?.tags && note.data.tags.length > 0 && (
+          <div class="flex items-center space-x-2">
+            <Icon name="mdi:tag-multiple" class="w-4 h-4 min-w-4 min-h-4" />
+            <div class="flex flex-wrap gap-2">
+              {note.data.tags.map((tag: string) => (
+                <span
+                  class="
+                px-2 py-1 rounded-md font-bold
+                bg-cyan-500/10 text-cyan-600
+              "
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        (note.data?.created || note.data?.updated) && (
+          <div class="flex items-center space-x-2">
+            <Icon name="mdi:calendar" class="w-4 h-4 min-w-4 min-h-4" />
+            <span>
+              {note.data?.created &&
+                `创建于 ${new Date(note.data.created).toLocaleDateString("zh-CN")}`}
+            </span>
+            <span>
+              {note.data?.updated &&
+                `更新于 ${new Date(note.data.updated).toLocaleDateString("zh-CN")}`}
+            </span>
+          </div>
+        )
+      }
+
+      {
+        remarkPluginFrontmatter.readingWords && (
+          <div class="flex items-center space-x-2">
+            <Icon name="mdi:text-box-check" class="w-4 h-4 min-w-4 min-h-4" />
+            <span>{remarkPluginFrontmatter.readingWords} 字</span>
+          </div>
+        )
+      }
+
+      {
+        remarkPluginFrontmatter.readingMinutes && (
+          <div class="flex items-center space-x-2">
+            <Icon name="mdi:clock" class="w-4 h-4 min-w-4 min-h-4" />
+            <span>
+              {Math.round(remarkPluginFrontmatter.readingMinutes)} 分钟
+            </span>
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <MarkdownContent>
+    <Content />
+  </MarkdownContent>
+
+  <div class="mt-12 pt-8 border-t border-gray-200">
+    <div class="flex items-center justify-between">
+      <a
+        href="/notes"
+        class="inline-flex items-center space-x-2 px-4 py-2 rounded-lg
+          text-gray-600 hover:text-cyan-600"
+      >
+        <Icon name="mdi:arrow-left" class="w-4 h-4" />
+        <span>返回笔记列表</span>
+      </a>
+
+      <div class="text-sm text-gray-500">📖 阅读愉快</div>
+    </div>
+  </div>
+</NotesLayout>

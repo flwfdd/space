@@ -1,0 +1,134 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div class="theme-toggle">
+  <button
+    id="theme-toggle"
+    class="p-2 rounded-lg cursor-pointer
+      text-gray-600 hover:text-gray-900
+      dark:text-gray-400 dark:hover:text-gray-100
+      transition-all duration-200"
+    aria-label="切换主题"
+  >
+    <Icon
+      name="mdi:white-balance-sunny"
+      class="w-5 h-5 theme-icon hidden hover:rotate-90 transition-all duration-200"
+      id="theme-icon-light"
+    />
+    <Icon
+      name="mdi:moon-and-stars"
+      class="w-5 h-5 theme-icon hidden hover:-rotate-30 transition-all duration-200"
+      id="theme-icon-dark"
+    />
+    <Icon
+      name="mdi:brightness-auto"
+      class="w-5 h-5 theme-icon hover:scale-110 transition-all duration-200"
+      id="theme-icon-system"
+    />
+  </button>
+</div>
+
+<script is:inline>
+  // 初始化主题
+  const theme = (() => {
+    const localStorageTheme = localStorage?.getItem("theme") ?? "";
+    if (["dark", "light", "system"].includes(localStorageTheme)) {
+      return localStorageTheme;
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  })();
+
+  // 应用主题
+  if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else if (theme === "system") {
+    // system主题根据系统偏好设置
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }
+
+  // 更新图标显示
+  function updateThemeIcon(theme) {
+    const systemIcon = document.getElementById("theme-icon-system");
+    const lightIcon = document.getElementById("theme-icon-light");
+    const darkIcon = document.getElementById("theme-icon-dark");
+
+    // 隐藏所有图标
+    systemIcon?.classList.add("hidden");
+    lightIcon?.classList.add("hidden");
+    darkIcon?.classList.add("hidden");
+
+    // 显示对应的图标
+    if (theme === "light") {
+      lightIcon?.classList.remove("hidden");
+    } else if (theme === "dark") {
+      darkIcon?.classList.remove("hidden");
+    } else {
+      systemIcon?.classList.remove("hidden");
+    }
+  }
+
+  // 初始化图标
+  updateThemeIcon(theme);
+
+  // 主题切换处理
+  const handleToggleClick = () => {
+    const currentTheme = localStorage.getItem("theme") || "system";
+    let nextTheme = "system";
+
+    // 循环切换：system -> light -> dark -> system
+    if (currentTheme === "system") {
+      nextTheme = "light";
+    } else if (currentTheme === "light") {
+      nextTheme = "dark";
+    } else if (currentTheme === "dark") {
+      nextTheme = "system";
+    }
+
+    // 应用新主题
+    if (nextTheme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (nextTheme === "system") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+
+    // 保存到localStorage
+    localStorage.setItem("theme", nextTheme);
+
+    // 更新图标
+    updateThemeIcon(nextTheme);
+  };
+
+  // 绑定事件
+  document
+    .getElementById("theme-toggle")
+    ?.addEventListener("click", handleToggleClick);
+
+  // 监听系统主题变化
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      if (localStorage.getItem("theme") === "system") {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      }
+    });
+</script>

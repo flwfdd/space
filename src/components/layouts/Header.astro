@@ -1,0 +1,61 @@
+---
+import ThemeToggle from "@/components/layouts/ThemeToggle.astro";
+const { class: className = "" } = Astro.props;
+
+const menus = [
+  {
+    name: "首页",
+    href: "/",
+  },
+  {
+    name: "笔记",
+    href: "/notes",
+  },
+  {
+    name: "关于",
+    href: "/about",
+  },
+];
+---
+
+<header
+  class={`
+  w-full p-6
+  ${className}
+`}
+>
+  <nav class="max-w-6xl mx-auto flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div
+        class="w-10 h-10 bg-cyan-500 rounded-lg flex items-center justify-center"
+      >
+        <span class="text-white font-bold text-lg">F</span>
+      </div>
+      <a href="/" class="text-2xl font-bold"> flwfdd'Space </a>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <ul class="flex space-x-2">
+        {
+          menus.map((menu) => (
+            <li>
+              <a
+                href={menu.href}
+                class="
+              px-4 py-2 rounded-lg
+              text-gray-700 font-medium
+              hover:text-cyan-600 hover:bg-cyan-50
+              dark:text-gray-300 dark:hover:text-cyan-400
+              transition-all duration-200
+            "
+              >
+                {menu.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,109 @@
+---
+import Layout from "./Layout.astro";
+import NotesSidebar from "@/components/notes/NotesSidebar.astro";
+import TableOfContents from "@/components/notes/TableOfContents.astro";
+
+const {
+  title = "笔记 - flwfdd's space",
+  description = "数字花园",
+  headings = [],
+  showSidebar = true,
+  showToc = true,
+  currentPath,
+} = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <div class="flex min-h-screen max-w-screen-xl mx-auto">
+    {
+      showSidebar && (
+        <div class="hidden lg:block flex-shrink-0 w-48">
+          <NotesSidebar currentPath={currentPath} />
+        </div>
+      )
+    }
+
+    <div class="flex-1 flex flex-col min-w-0">
+      <main class="flex-1">
+        <article class="max-w-3xl mx-auto">
+          <div class="p-4 sm:p-6 lg:p-8">
+            <slot />
+          </div>
+        </article>
+      </main>
+    </div>
+
+    {
+      showToc && (
+        <div class="hidden xl:block flex-shrink-0 w-48">
+          <TableOfContents headings={headings} />
+        </div>
+      )
+    }
+
+    {
+      showSidebar && (
+        <div class="lg:hidden">
+          <div
+            id="mobile-sidebar-overlay"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden"
+          />
+
+          <div
+            id="mobile-sidebar"
+            class="fixed left-0 top-0 h-full w-60 z-50 pl-4 bg-white transform -translate-x-full transition-transform duration-300"
+          >
+            <NotesSidebar currentPath={currentPath} />
+          </div>
+
+          <button
+            id="mobile-sidebar-toggle"
+            class="
+          lg:hidden fixed bottom-6 left-6 z-30
+          w-12 h-12 bg-cyan-500 rounded-lg
+          flex items-center justify-center
+          text-white hover:bg-cyan-600
+          transition-colors duration-200
+        "
+            aria-label="打开/关闭侧边栏"
+          >
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+            </svg>
+          </button>
+        </div>
+      )
+    }
+  </div>
+
+  <script>
+    function initMobileSidebar() {
+      const sidebar = document.getElementById("mobile-sidebar");
+      const overlay = document.getElementById("mobile-sidebar-overlay");
+      const toggle = document.getElementById("mobile-sidebar-toggle");
+
+      if (!sidebar || !overlay || !toggle) return;
+
+      function toggleSidebar() {
+        if (!sidebar || !overlay) return;
+
+        const isOpen = !sidebar.classList.contains("-translate-x-full");
+
+        if (isOpen) {
+          sidebar.classList.add("-translate-x-full");
+          overlay.classList.add("hidden");
+        } else {
+          sidebar.classList.remove("-translate-x-full");
+          overlay.classList.remove("hidden");
+        }
+      }
+
+      // 绑定事件监听器
+      toggle.addEventListener("click", toggleSidebar);
+      overlay.addEventListener("click", toggleSidebar);
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener("DOMContentLoaded", initMobileSidebar);
+  </script>
+</Layout>
