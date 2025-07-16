@@ -11,7 +11,8 @@ const notes = defineCollection({
 		removeH1: false,
 	}),
 	schema: () => ObsidianDocumentSchema.extend({
-		img: z.string().optional(),
+		tags: z.array(z.string()).optional().nullable(),
+		img: z.string().optional().nullable(),
 	}),
 });
 

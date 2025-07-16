@@ -1,11 +1,11 @@
 ---
 title: 
 description: 
-tags: 
+tags: []
 img: 
 publish: "true"
 created: 2025-07-16 20:15:15
-updated: 2025-07-16 20:40:24
+updated: 2025-07-16 22:32:09
 ---
 
 使用 Astro 重构了个人网站，将一个子文件夹作为笔记部分，配合 Obsidian 使用，这样就可以使用 Git 管理，同时又能够自动发布了。在此记录一些 Obsidian 相关的配置。
