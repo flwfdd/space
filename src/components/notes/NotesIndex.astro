@@ -86,10 +86,9 @@ function renderTree(
             <details class="folder-details" data-folder-path="${currentFullPath}">
               <summary class="
                   flex items-center space-x-1 p-2 rounded-md cursor-pointer
-                  text-gray-500 dark:text-gray-300
-                  hover:text-cyan-500 hover:bg-gray-50 dark:hover:bg-cyan-950
+                  hover:text-cyan-500 hover:bg-gray-50 dark:hover:text-cyan-400 dark:hover:bg-cyan-950
                   transition-all duration-100
-                  list-none
+                  list-none truncate
                   [&::-webkit-details-marker]:hidden
                 "
                 title="${name}">

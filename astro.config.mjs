@@ -13,6 +13,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import icon from 'astro-icon';
+import rehypeExternalLinks from 'rehype-external-links';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +22,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   markdown: {
     remarkPlugins: [remarkMath, remarkReadingTime],
-    rehypePlugins: [rehypeKatex, rehypeFigure],
+    rehypePlugins: [rehypeKatex, rehypeFigure, [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }]],
     shikiConfig: {
       themes: {
         light: 'dark-plus',
