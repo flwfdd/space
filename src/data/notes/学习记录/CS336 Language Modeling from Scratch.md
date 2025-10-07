@@ -1,5 +1,5 @@
 ---
-title:
+title: CS336 Language Modeling from Scratch
 description:
 tags: []
 img:
