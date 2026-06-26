@@ -51,3 +51,17 @@
 .dark ::selection {
     background: var(--color-cyan-800);
 }
+
+/* Mermaid 图：去掉 prose 默认的代码块背景/内边距，居中显示 */
+.prose pre.mermaid {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.prose pre.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}

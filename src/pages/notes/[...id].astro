@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 }
 
 const { note } = Astro.props;
-const { Content, headings, remarkPluginFrontmatter } = await render(note);
+const { Content, headings } = await render(note);
 
 let title = note.data?.title;
 // 判断标题是否是一级标题自动生成的
@@ -140,26 +140,6 @@ if (note.data?.img) {
             </span>
             <span>
               {note.data?.updated && `更新于 ${formatDate(note.data.updated)}`}
-            </span>
-          </div>
-        )
-      }
-
-      {
-        remarkPluginFrontmatter.readingWords && (
-          <div class="flex items-center space-x-2">
-            <Icon name="mdi:text-box-check" class="w-4 h-4 min-w-4 min-h-4" />
-            <span>{remarkPluginFrontmatter.readingWords} 字</span>
-          </div>
-        )
-      }
-
-      {
-        remarkPluginFrontmatter.readingMinutes && (
-          <div class="flex items-center space-x-2">
-            <Icon name="mdi:clock" class="w-4 h-4 min-w-4 min-h-4" />
-            <span>
-              {Math.round(remarkPluginFrontmatter.readingMinutes)} 分钟
             </span>
           </div>
         )
