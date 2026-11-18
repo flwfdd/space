@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="640" height="640" viewBox="0 0 640 640" role="img" aria-labelledby="title">
+  <title id="title">蓝色同心圆中的橙色环状行星</title>
+
+  <defs>
+    <clipPath id="globe-outline">
+      <circle cx="320" cy="320" r="65.5"/>
+    </clipPath>
+    <clipPath id="ring-outline">
+      <path clip-rule="evenodd" d="
+        M217 324.5 a103 46.5 0 1 1 206 0 a103 46.5 0 1 1 -206 0 Z
+        M236 318 a84 30 0 1 1 168 0 a84 30 0 1 1 -168 0 Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="640" height="640" fill="#00576b"/>
+  <g id="blue-rings">
+    <circle cx="320" cy="320" r="256" fill="#0f7c99"/>
+    <circle cx="320" cy="320" r="224" fill="#2695b3"/>
+    <circle cx="320" cy="320" r="192" fill="#3dabce"/>
+    <circle cx="320" cy="320" r="160" fill="#42bfdf"/>
+    <circle cx="320" cy="320" r="128" fill="#79e5fe"/>
+  </g>
+
+  <g id="saturn">
+    <g id="lower-globe" clip-path="url(#globe-outline)">
+      <rect x="254" y="304" width="132" height="82" fill="#fd993c"/>
+      <rect x="254" y="359" width="132" height="27" fill="#ff7902"/>
+    </g>
+    <g id="ring" clip-path="url(#ring-outline)">
+      <rect x="215" y="276" width="210" height="97" fill="#fe7125"/>
+      <ellipse cx="320" cy="309.5" rx="102" ry="38.5" fill="#fa9048"/>
+      <path d="M236 318 A84 34.5 0 0 1 404 318 Z" fill="#a44013"/>
+      <path id="ring-underside" fill="#dc3203"
+            d="M217.3175 328.1483
+               C217.6836 330.2483 222.25 335.9605 225.75 339.4657
+               A102.6 44.2 0 0 0 414.25 339.4657
+               C417.75 335.9605 422.3164 330.2483 422.6825 328.1483
+               A103 46.5 0 0 1 217.3175 328.1483 Z"/>
+    </g>
+    <g id="upper-globe" clip-path="url(#globe-outline)">
+      <rect x="254" y="254" width="132" height="52" fill="#fd993c"/>
+      <ellipse cx="320" cy="293" rx="61.5" ry="45" fill="#ffa557"/>
+      <ellipse cx="320" cy="277" rx="43" ry="24.25" fill="#ffb981"/>
+      <ellipse cx="320" cy="264.5" rx="18" ry="9" fill="#fcd0aa"/>
+    </g>
+  </g>
+</svg>

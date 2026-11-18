@@ -3,9 +3,7 @@ import { satteri } from '@astrojs/markdown-satteri';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, svgoOptimizer } from 'astro/config';
 
-// 引入 Node.js 的 path 和 url 模块来生成绝对路径
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 import icon from 'astro-icon';
 import mermaid from './src/integrations/mermaid';
@@ -15,9 +13,6 @@ import {
   katexPlugin,
   mermaidPlugin,
 } from './src/lib/markdown/satteri-plugins';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // https://astro.build/config
 export default defineConfig({
@@ -58,10 +53,10 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'),
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
   },
 
-  integrations: [icon(), mermaid()]
+  integrations: [icon({ iconDir: 'public' }), mermaid()]
 });

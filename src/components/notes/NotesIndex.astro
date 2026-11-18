@@ -1,5 +1,7 @@
 ---
 import { getCollection } from "astro:content";
+import { buildNoteTree } from "@/lib/note-tree";
+import NoteTree from "./NoteTree.astro";
 
 export interface Props {
   currentPath?: string;
@@ -7,149 +9,19 @@ export interface Props {
 
 const { currentPath } = Astro.props;
 const notes = (await getCollection("notes")).filter(
-  (note) => note.data?.publish !== false,
+  (note) => note.data.publish !== false,
 );
-
-function buildFileTree(notes: any[]) {
-  const tree: Record<string, any> = {};
-
-  notes.forEach((note) => {
-    const parts = note.id.split("/");
-    let current = tree;
-
-    parts.forEach((part: string, index: number) => {
-      if (index === parts.length - 1) {
-        current[part] = {
-          type: "file",
-          note: note,
-          title: note.data?.title || part.replace(".md", ""),
-        };
-      } else {
-        if (!current[part]) {
-          current[part] = {
-            type: "folder",
-            children: {},
-          };
-        }
-        current = current[part].children;
-      }
-    });
-  });
-
-  return tree;
-}
-
-const fileTree = buildFileTree(notes);
-
-function isCurrentPath(path: string, currentPath?: string): boolean {
-  if (!currentPath) return false;
-  return currentPath === path;
-}
-
-function renderTree(
-  tree: Record<string, any>,
-  depth = 0,
-  pathPrefix = "",
-): string {
-  return Object.entries(tree)
-    .sort(([a, aData], [b, bData]) => {
-      if (aData.type !== bData.type) {
-        return aData.type === "folder" ? -1 : 1;
-      }
-      return a.localeCompare(b);
-    })
-    .map(([name, data]) => {
-      const currentFullPath = pathPrefix ? `${pathPrefix}/${name}` : name;
-
-      if (data.type === "file") {
-        const isActive = isCurrentPath(data.note.id, currentPath);
-        return `
-          <li class="group">
-            <a 
-              href="/notes/${data.note.id}"
-              class="
-                flex items-center p-2 rounded-lg
-                ${isActive && "text-cyan-500 bg-gray-50 dark:text-cyan-400 dark:bg-cyan-950"}
-                hover:text-cyan-500 hover:bg-gray-50 dark:hover:text-cyan-400 dark:hover:bg-cyan-950
-                transition-all duration-100
-                font-medium text-sm truncate
-              "
-              title="${data.title}"
-            >
-              ${data.title}
-            </a>
-          </li>
-        `;
-      } else {
-        return `
-          <li>
-            <details class="folder-details" data-folder-path="${currentFullPath}">
-              <summary class="
-                  flex items-center space-x-1 p-2 rounded-md cursor-pointer
-                  hover:text-cyan-500 hover:bg-gray-50 dark:hover:text-cyan-400 dark:hover:bg-cyan-950
-                  transition-all duration-100
-                  list-none truncate
-                  [&::-webkit-details-marker]:hidden
-                "
-                title="${name}">
-                <svg class="w-4 h-4 flex-shrink-0 text-gray-400 folder-arrow transition-transform duration-200" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
-                </svg>
-                <span class="font-bold text-sm">${name}</span>
-              </summary>
-              <ul class="ml-2 border-l border-gray-200 dark:border-gray-700 pl-2">
-                ${renderTree(data.children, depth + 1, currentFullPath)}
-              </ul>
-            </details>
-          </li>
-        `;
-      }
-    })
-    .join("");
-}
+const tree = buildNoteTree(notes);
 ---
 
 <aside class="sticky top-6 max-h-screen flex flex-col select-none">
   <h3 class="flex-shrink-0 flex space-x-3 text-lg font-bold my-4 items-center">
-    <span
-      class="size-8 bg-cyan-300 border-4 border-cyan-200 dark:bg-cyan-700 dark:border-cyan-800 rounded-lg flex items-center justify-center"
-    >
+    <span class="size-8 bg-cyan-300 border-4 border-cyan-200 dark:bg-cyan-700 dark:border-cyan-800 rounded-lg flex items-center justify-center">
       📚
     </span>
     <span>目录</span>
   </h3>
-  <nav class="flex-1 overflow-y-auto">
-    <ul>
-      <Fragment set:html={renderTree(fileTree)} />
-    </ul>
+  <nav class="flex-1 overflow-y-auto" aria-label="笔记目录">
+    <NoteTree tree={tree} currentPath={currentPath} />
   </nav>
 </aside>
-
-<script define:vars={{ currentPath }}>
-  function initFolderBehavior() {
-    const details = document.querySelectorAll("details[data-folder-path]");
-
-    details.forEach((detail) => {
-      const folderPath = detail.getAttribute("data-folder-path");
-      const arrow = detail.querySelector(".folder-arrow");
-      const detailsElement = detail;
-
-      // 初始化时，如果当前路径包含此文件夹路径，则展开
-      if (currentPath && currentPath.startsWith(folderPath + "/")) {
-        detailsElement.open = true;
-        if (arrow) arrow.style.transform = "rotate(90deg)";
-      }
-
-      // 监听toggle事件
-      detail.addEventListener("toggle", () => {
-        if (arrow) {
-          arrow.style.transform = detailsElement.open
-            ? "rotate(90deg)"
-            : "rotate(0deg)";
-        }
-      });
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", initFolderBehavior);
-</script>

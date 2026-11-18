@@ -1,7 +1,7 @@
 ---
 import MarkdownContent from "@/components/notes/MarkdownContent.astro";
+import Time from "@/components/Time.astro";
 import NotesLayout from "@/layouts/NotesLayout.astro";
-import { formatDate } from "@/lib/fotmat";
 import { normalizePath } from "@/lib/path-utils";
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
@@ -133,14 +133,14 @@ if (note.data?.img) {
 
       {
         (note.data?.created || note.data?.updated) && (
-          <div class="flex items-center space-x-2">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
             <Icon name="mdi:calendar" class="w-4 h-4 min-w-4 min-h-4" />
-            <span>
-              {note.data?.created && `创建于 ${formatDate(note.data.created)}`}
-            </span>
-            <span>
-              {note.data?.updated && `更新于 ${formatDate(note.data.updated)}`}
-            </span>
+            {note.data?.created && (
+              <span>创建于 <Time date={note.data.created} /></span>
+            )}
+            {note.data?.updated && (
+              <span>更新于 <Time date={note.data.updated} /></span>
+            )}
           </div>
         )
       }

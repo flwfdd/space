@@ -1,0 +1,38 @@
+---
+import {
+  formatDate,
+  parseDate,
+  PROJECT_TIME_ZONE,
+  type DateFormat,
+  type DateInput,
+} from "@/lib/date";
+
+export interface Props {
+  date: DateInput;
+  format?: DateFormat;
+  class?: string;
+}
+
+const { date, format = "date", class: className } = Astro.props;
+const iso = parseDate(date).toISOString();
+const fallback = formatDate(date, { timeZone: PROJECT_TIME_ZONE, format });
+---
+
+<time datetime={iso} data-local-time data-format={format} class={className}>
+  {fallback}
+</time>
+
+<script>
+  import { formatDate } from "@/lib/date";
+
+  function localizeTimes() {
+    document.querySelectorAll<HTMLTimeElement>("time[data-local-time]").forEach((element) => {
+      element.textContent = formatDate(element.dateTime, {
+        format: element.dataset.format === "datetime" ? "datetime" : "date",
+      });
+    });
+  }
+
+  localizeTimes();
+  document.addEventListener("astro:after-swap", localizeTimes);
+</script>

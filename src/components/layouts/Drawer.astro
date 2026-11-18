@@ -1,0 +1,136 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  id: string;
+  label: string;
+  triggerLabel: string;
+  side?: "left" | "right";
+  class?: string;
+  triggerClass?: string;
+}
+
+const {
+  id,
+  label,
+  triggerLabel,
+  side = "right",
+  class: className = "",
+  triggerClass = "",
+} = Astro.props;
+---
+
+<div class={className}>
+  <button
+    type="button"
+    id={`${id}-trigger`}
+    class={triggerClass}
+    aria-label={triggerLabel}
+    aria-controls={id}
+    aria-haspopup="dialog"
+    aria-expanded="false"
+  >
+    <slot name="trigger" />
+  </button>
+
+  <dialog
+    id={id}
+    data-drawer
+    data-side={side}
+    aria-label={label}
+    class="p-0 bg-gray-100 text-cyan-900 dark:bg-[#00161C] dark:text-cyan-50"
+  >
+    <div class="flex items-center justify-between border-b border-cyan-500/20 p-4">
+      <span class="font-bold">{label}</span>
+      <button
+        type="button"
+        data-drawer-close
+        class="rounded-lg p-2 hover:bg-cyan-500/10"
+        aria-label={`关闭${label}`}
+      >
+        <Icon name="mdi:close" class="size-6" />
+      </button>
+    </div>
+    <div class="min-h-0 flex-1 overflow-y-auto p-4">
+      <slot />
+    </div>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLDialogElement>("dialog[data-drawer]").forEach((dialog) => {
+    const trigger = document.getElementById(`${dialog.id}-trigger`);
+    let previousOverflow = "";
+
+    function openDrawer() {
+      if (dialog.open) return;
+      previousOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = "hidden";
+      dialog.showModal();
+      trigger?.setAttribute("aria-expanded", "true");
+    }
+
+    trigger?.addEventListener("click", openDrawer);
+    dialog.querySelectorAll("[data-drawer-close]").forEach((button) => {
+      button.addEventListener("click", () => dialog.close());
+    });
+
+    dialog.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      if (target.closest("a")) {
+        dialog.close();
+        return;
+      }
+
+      if (target !== dialog) return;
+      const rect = dialog.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      if (!inside) dialog.close();
+    });
+
+    dialog.addEventListener("close", () => {
+      document.documentElement.style.overflow = previousOverflow;
+      trigger?.setAttribute("aria-expanded", "false");
+    });
+  });
+</script>
+
+<style>
+  dialog {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: min(20rem, 85vw);
+    max-width: none;
+    max-height: none;
+    height: 100dvh;
+    margin: 0;
+    border: 0;
+  }
+
+  dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  dialog[data-side="left"] {
+    left: 0;
+    right: auto;
+  }
+
+  dialog[data-side="right"] {
+    right: 0;
+    left: auto;
+  }
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 25%);
+    backdrop-filter: blur(4px);
+  }
+</style>

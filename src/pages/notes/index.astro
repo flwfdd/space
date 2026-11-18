@@ -1,6 +1,6 @@
 ---
 import NotesLayout from "@/layouts/NotesLayout.astro";
-import { formatDate } from "@/lib/fotmat";
+import Time from "@/components/Time.astro";
 import { getCollection } from "astro:content";
 
 const notes = (await getCollection("notes"))
@@ -34,7 +34,7 @@ const notes = (await getCollection("notes"))
                 <span class="text-sm text-gray-500/50 truncate">{note.id}</span>
               </span>
               <span class="shrink-0 text-sm text-gray-500">
-                {formatDate(note.data.created)}
+                <Time date={note.data.updated} />
               </span>
             </a>
           ))

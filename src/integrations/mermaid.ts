@@ -22,7 +22,10 @@ async function renderMermaid() {
       node.innerHTML = svg;
       node.setAttribute('data-processed', 'true');
     } catch (error) {
-      node.innerHTML = '<code style="color:#e11d48">Mermaid 渲染失败: ' + (error && error.message ? error.message : error) + '</code>';
+      const code = document.createElement('code');
+      code.style.color = '#e11d48';
+      code.textContent = 'Mermaid 渲染失败: ' + (error && error.message ? error.message : error);
+      node.replaceChildren(code);
     }
   }
 }

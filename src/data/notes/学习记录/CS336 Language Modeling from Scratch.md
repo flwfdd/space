@@ -4,8 +4,8 @@ description:
 tags: []
 img:
 publish: true
-created: 2025-09-21 00:15:02
-updated: 2025-12-07 17:35:07
+created: 2025-09-21T00:15:02+08:00
+updated: 2025-12-07T17:35:07+08:00
 ---
 官网：[Stanford CS336 | Language Modeling from Scratch](https://stanford-cs336.github.io/spring2025/)
 B 站：[大模型课程（中英字幕完结）斯坦福CS336：从头开始构建大模型](https://www.bilibili.com/video/BV18ntqzrELM/)

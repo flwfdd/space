@@ -30,105 +30,36 @@ import { Icon } from "astro-icon/components";
 </div>
 
 <script is:inline>
-  // 初始化主题
-  const theme = (() => {
-    const localStorageTheme = localStorage?.getItem("theme") ?? "";
-    if (["dark", "light", "system"].includes(localStorageTheme)) {
-      return localStorageTheme;
-    }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
-    return "light";
-  })();
+  (() => {
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const getTheme = () => localStorage.getItem("theme") || "system";
 
-  // 应用主题
-  if (theme === "light") {
-    document.documentElement.classList.remove("dark");
-  } else if (theme === "dark") {
-    document.documentElement.classList.add("dark");
-  } else if (theme === "system") {
-    // system主题根据系统偏好设置
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }
+    function applyTheme(theme) {
+      const isDark =
+        theme === "dark" || (theme === "system" && systemTheme.matches);
+      document.documentElement.classList.toggle("dark", isDark);
 
-  // 更新图标显示
-  function updateThemeIcon(theme) {
-    const systemIcon = document.getElementById("theme-icon-system");
-    const lightIcon = document.getElementById("theme-icon-light");
-    const darkIcon = document.getElementById("theme-icon-dark");
-
-    // 隐藏所有图标
-    systemIcon?.classList.add("hidden");
-    lightIcon?.classList.add("hidden");
-    darkIcon?.classList.add("hidden");
-
-    // 显示对应的图标
-    if (theme === "light") {
-      lightIcon?.classList.remove("hidden");
-    } else if (theme === "dark") {
-      darkIcon?.classList.remove("hidden");
-    } else {
-      systemIcon?.classList.remove("hidden");
-    }
-  }
-
-  // 初始化图标
-  updateThemeIcon(theme);
-
-  // 主题切换处理
-  const handleToggleClick = () => {
-    const currentTheme = localStorage.getItem("theme") || "system";
-    let nextTheme = "system";
-
-    // 循环切换：system -> light -> dark -> system
-    if (currentTheme === "system") {
-      nextTheme = "light";
-    } else if (currentTheme === "light") {
-      nextTheme = "dark";
-    } else if (currentTheme === "dark") {
-      nextTheme = "system";
-    }
-
-    // 应用新主题
-    if (nextTheme === "light") {
-      document.documentElement.classList.remove("dark");
-    } else if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else if (nextTheme === "system") {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
+      for (const name of ["light", "dark", "system"]) {
+        document
+          .getElementById(`theme-icon-${name}`)
+          ?.classList.toggle("hidden", name !== theme);
       }
     }
 
-    // 保存到localStorage
-    localStorage.setItem("theme", nextTheme);
-
-    // 更新图标
-    updateThemeIcon(nextTheme);
-  };
-
-  // 绑定事件
-  document
-    .getElementById("theme-toggle")
-    ?.addEventListener("click", handleToggleClick);
-
-  // 监听系统主题变化
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", () => {
-      if (localStorage.getItem("theme") === "system") {
-        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
-      }
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+      const nextTheme = {
+        system: "light",
+        light: "dark",
+        dark: "system",
+      }[getTheme()];
+      localStorage.setItem("theme", nextTheme);
+      applyTheme(nextTheme);
     });
+
+    systemTheme.addEventListener("change", () => {
+      if (getTheme() === "system") applyTheme("system");
+    });
+
+    applyTheme(getTheme());
+  })();
 </script>

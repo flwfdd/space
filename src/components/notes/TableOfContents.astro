@@ -1,9 +1,6 @@
 ---
-import { Icon } from "astro-icon/components";
-
 export interface Props {
   headings?: { depth: number; slug: string; text: string }[];
-  class?: string;
 }
 
 const { headings = [] } = Astro.props;
@@ -32,7 +29,7 @@ const { headings = [] } = Astro.props;
                   dark:hover:text-cyan-300
                   transition-all duration-200
                   ${heading.depth === 1 && "text-base mt-2"}
-                  ${heading.depth === 2 && "ml-3 test-base mt-2"}
+                  ${heading.depth === 2 && "ml-3 text-base mt-2"}
                   ${heading.depth === 3 && "ml-6 text-sm mt-1"}
                   ${heading.depth === 4 && "ml-9 text-sm mt-1"}
                   ${heading.depth === 5 && "ml-12 text-xs"}
@@ -54,10 +51,10 @@ const { headings = [] } = Astro.props;
     const links = document.querySelectorAll(".toc-link");
     const headings = Array.from(links)
       .map((link) => {
-        const href = link.getAttribute("href");
-        return href ? document.querySelector(href) : null;
+        const headingId = link.getAttribute("data-heading-id");
+        return headingId ? document.getElementById(headingId) : null;
       })
-      .filter((heading): heading is Element => heading !== null);
+      .filter((heading): heading is HTMLElement => heading !== null);
 
     if (headings.length === 0) return;
 

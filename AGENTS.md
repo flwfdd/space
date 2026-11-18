@@ -9,7 +9,7 @@
 ## 技术栈
 
 - **框架**: Astro 7（从 v5 升级而来，最新 7.x）
-- **包管理器**: pnpm（见 `package.json` 的 `packageManager` 字段，**不要**改用 npm/yarn）
+- **包管理器**: pnpm 12（见 `package.json` 的 `packageManager` 字段，**不要**改用 npm/yarn）
 - **样式**: Tailwind CSS v4，通过 `@tailwindcss/vite` 插件接入（**没有** `tailwind.config.js`，配置走 CSS 优先模式，见 `src/styles/global.css`）
 - **构建器**: Vite 8（随 Astro 7）
 - **内容**: Content Collections + `astro-loader-obsidian`，从 `src/data/notes/` 加载 Obsidian 笔记
@@ -26,14 +26,15 @@
 | `pnpm build` | 构建到 `./dist/` |
 | `pnpm preview` | 本地预览构建产物 |
 | `pnpm astro ...` | Astro CLI（如 `astro check`） |
+| `pnpm astro check` | Astro 与 TypeScript 类型检查 |
 
-改动配置或依赖后，用 `pnpm build` 验证（构建应输出全部页面且无报错）。
+改动配置或依赖后，用 `pnpm astro check && pnpm build` 验证（类型检查应通过，构建应输出全部页面且无报错）。
 
 ## 目录结构
 
 ```
 src/
-  components/             UI 组件（layouts/、notes/ 分类）
+  components/             UI 组件（layouts/、notes/ 分类；Drawer 为统一移动端抽屉）
   content.config.ts       内容集合定义（notes 集合 + schema）
   data/notes/             Obsidian 笔记源文件（.md，含中文文件名与子目录）
   integrations/mermaid.ts 自定义 Mermaid 集成（注入客户端渲染脚本）
@@ -51,8 +52,11 @@ public/                   静态资源（favicon.ico 等，不经构建处理）
 - **路径别名**: `@/*` 映射到 `src/*`（见 `tsconfig.json` 与 `astro.config.mjs` 的 vite alias），导入优先用 `@/...`。
 - **TypeScript**: 继承 `astro/tsconfigs/strict`，保持严格类型。
 - **注释/文案**: 现有代码注释多为中文，沿用即可；面向用户的文案用简体中文。
-- **新增笔记**: 在 `src/data/notes/` 下放 `.md` 文件即可（支持中文名与子目录）；frontmatter 字段以 `notes` 集合 schema 为准（`tags`、`img` 等），编辑器开启 `astro.content-intellisense` 可获得补全。
-- 注意 `src/lib/fotmat.ts` 是既有文件名（拼写如此），引用时勿"自动纠正"为 `format.ts`。
+- **新增笔记**: 在 `src/data/notes/` 下放 `.md` 文件即可（支持中文名与子目录）；frontmatter 字段以 `notes` 集合 schema 为准（`tags`、`img` 等），编辑器开启 `astro.content-intellisense` 可获得补全。`publish: false` 只阻止页面生成，源文件在公开仓库中仍可见。正文中的 `#标签` 不自动转换成链接，避免代码示例中的 `#` 被误判为标签。
+- **笔记时间**: `created`、`updated` 使用带时区的 ISO 8601 格式，例如 `2025-09-16T18:59:11+08:00`。Obsidian 模板格式为 `{{DATE:YYYY-MM-DD[T]HH:mm:ssZ}}`。需要显示时间时统一使用 `src/components/Time.astro`：静态内容按 `Asia/Shanghai` 兜底，浏览器再按客户端时区与语言环境更新；`format="datetime"` 可显示日期和时间。`src/lib/date.ts` 同时提供服务端和客户端格式化，传入字符串时必须带时区。
+- **移动端抽屉**: 统一使用 `src/components/layouts/Drawer.astro` 的原生 `<dialog>` 实现，不为单个抽屉另写遮罩和开关脚本。
+- **本地 SVG**: 放在 `public/`，既可作为静态资源引用，也可通过 `astro-icon` 使用；小型 SVG 不进入 Git LFS。
+- **笔记目录**: `src/lib/note-tree.ts` 定义文件／文件夹联合类型，`src/components/notes/NoteTree.astro` 递归渲染目录。文本通过 Astro 元素输出，不使用 HTML 字符串拼接或 `set:html`；文件夹展开使用原生 `<details>`，不另写目录脚本。
 
 ## Markdown 管线：Sätteri（重要）
 
@@ -82,5 +86,6 @@ Mermaid：主题跟随 `<html>` 上的 `.dark` 类（**不是** `data-theme`）�
 
 ## 已知风险
 
-- `astro-loader-obsidian` 的 peer 依赖声明仍停留在 Astro 5，`pnpm install` 会有 peer 警告。运行时正常，**不要为消警告而降级 Astro**。
-- 构建时有一条 "loader's schema is defined using a function" 警告，来自 `astro-loader-obsidian` 内部（非本项目配置）；因 `content.config.ts` 自带 schema，目前无影响，等该 loader 适配 v7 后再升级它。
+- `astro-loader-obsidian` 0.10.0 的 peer 依赖声明仍停留在 Astro 5，`pnpm install` 会有 peer 警告。当前 Astro 7 构建与类型检查正常，**不要为消警告而降级 Astro**。
+- Loader 0.10.0 未声明其运行时引用的 `hast-util-from-html` 和 `hast-util-to-html`，项目已显式添加这两个依赖；上游补齐前不要移除。Loader 自带的 Zod 3 Schema 已禁用，`src/content.config.ts` 使用 `astro/zod` 的 Zod 4 Schema 声明项目字段，升级 Loader 后需要重新验证内容同步。
+- Mermaid 12 的部分动态分包超过 500 kB，构建会提示 chunk 大小。只有含 Mermaid 图的页面会加载这些分包，不要为了消除提示拆散自定义集成。
