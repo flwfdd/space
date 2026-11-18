@@ -1,0 +1,50 @@
+# Markdown 渲染管线
+
+## Sätteri
+
+项目使用 Astro 的 Sätteri Markdown 引擎，入口在 `astro.config.mjs`。不要改回 unified、remark 或 rehype，它们的插件与 Sätteri 不兼容。
+
+配置分为两阶段：
+
+- mdast：`katexPlugin`、`mermaidPlugin`
+- hast：`figurePlugin`、`externalLinksPlugin`
+
+自定义实现位于 `src/lib/markdown/satteri-plugins.ts`。
+
+| 能力 | 实现 |
+| --- | --- |
+| 数学公式 | `features.math` 解析，`katexPlugin` 渲染行内与块级 KaTeX |
+| Mermaid | `mermaidPlugin` 生成 `<pre class="mermaid">`，客户端动态渲染 |
+| 图片说明 | `figurePlugin` 将纯图片段落转换为 `figure` 与 `figcaption` |
+| 外部链接 | `externalLinksPlugin` 添加 `target="_blank"` 和 `rel="noopener noreferrer"` |
+
+## 插件 API
+
+- mdast 插件使用 `{ name, <nodeType>(node, ctx) {} }`。
+- hast 插件使用 `{ name, element: { filter: [...], visit(node, ctx) {} } }`。
+- 返回新节点表示替换；`ctx.replaceNode`、`ctx.setProperty` 等用于就地修改。
+- mdast 原始 HTML 使用 `{ rawHtml }`，hast 原始文本使用 `{ type: 'raw', value }`。
+- `ctx.data` 是每篇文档独立的数据袋；`ctx.data.astro.frontmatter` 会暴露给页面。
+- 用户 hast 插件在内置 `image-marker` 和 `heading-ids` 前运行，因此图片插件复用原 `<img>` 节点。
+
+参考实现位于 `node_modules/@astrojs/markdown-satteri/dist/satteri-processor.js`。
+
+## Mermaid
+
+`src/integrations/mermaid.ts` 只注入客户端逻辑。页面没有 `pre.mermaid` 时不会加载 Mermaid 库。
+
+- 主题读取 `<html>` 的 `.dark` 类，不使用 `data-theme`。
+- 主题切换时保留原始定义并重新渲染。
+- 渲染失败通过 DOM `textContent` 显示错误，不拼接错误 HTML。
+- 大分包只服务于包含图表的页面，构建时的 chunk 提示无需通过重构消除。
+
+## 修改后的验证
+
+先运行：
+
+```sh
+pnpm astro check
+pnpm build
+```
+
+当前公开笔记没有覆盖所有公式和 Mermaid 形态。修改插件后，还应使用 `createSatteriMarkdownProcessor` 直接渲染包含行内公式、块级公式、Mermaid、图片和外链的样例，检查实际输出，而不只检查导入或编译是否成功。
