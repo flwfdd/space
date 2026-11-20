@@ -22,6 +22,7 @@ Agent 修改本仓库前，先阅读本文件和与任务相关的 `docs/` 文�
 
 | 对象 | 约定 |
 | --- | --- |
+| 设计 token 与基础组件 | 使用 `src/styles/design.css`，示例与约定见 `src/data/notes/设计系统.md` |
 | 日期与时间 | 统一使用 `src/components/Time.astro`，由浏览器按客户端时区显示 |
 | 移动端抽屉 | 统一使用 `src/components/layouts/Drawer.astro` 的原生 `<dialog>` |
 | 笔记目录 | 使用 `src/lib/note-tree.ts` 和 `NoteTree.astro`，文件夹展开使用原生 `<details>` |

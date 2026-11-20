@@ -52,3 +52,85 @@
     z-index: -1;
   }
 </style>
+
+<script>
+  import { COPY_ICON } from "@/lib/copy-icon";
+
+  function addCopyButtons(selector: string, className: string, label: string) {
+    document.querySelectorAll<HTMLElement>(selector).forEach((target) => {
+      if (target.parentElement?.classList.contains(className)) return;
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-copy";
+      button.setAttribute("aria-label", label);
+      button.title = label;
+      button.innerHTML = COPY_ICON;
+
+      const block = document.createElement("div");
+      block.className = `copy-block ${className}`;
+      target.before(block);
+      block.append(button, target);
+    });
+  }
+
+  addCopyButtons(".katex-display", "math-block", "复制公式");
+  addCopyButtons("pre.mermaid", "mermaid-block", "复制 Mermaid");
+
+  document.querySelectorAll<HTMLButtonElement>(".code-line-number-toggle").forEach((button) => {
+    button.addEventListener("click", () => {
+      const block = button.closest(".code-block");
+      if (!block) return;
+      const visible = block.classList.toggle("has-line-numbers");
+      const label = visible ? "隐藏行号" : "显示行号";
+      button.setAttribute("aria-pressed", String(visible));
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>(".code-wrap").forEach((button) => {
+    button.addEventListener("click", () => {
+      const block = button.closest(".code-block");
+      if (!block) return;
+      const wrapped = block.classList.toggle("is-wrapped");
+      button.setAttribute("aria-pressed", String(wrapped));
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>(".code-copy").forEach((button) => {
+    const label = button.getAttribute("aria-label") ?? "复制";
+    let resetTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const reset = () => {
+      delete button.dataset.copied;
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    };
+
+    button.addEventListener("click", async () => {
+      const block = button.closest(".code-block, .copy-block");
+      const pre = block?.querySelector<HTMLElement>("pre");
+      const text = pre?.dataset.diagram
+        ?? block?.querySelector('annotation[encoding="application/x-tex"]')?.textContent
+        ?? pre?.innerText;
+      if (text == null) return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        button.setAttribute("aria-label", "复制失败");
+        button.title = "复制失败";
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(reset, 1200);
+        return;
+      }
+
+      button.dataset.copied = "true";
+      button.setAttribute("aria-label", "已复制");
+      button.title = "已复制";
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(reset, 1200);
+    });
+  });
+</script>

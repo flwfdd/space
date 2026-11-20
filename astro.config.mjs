@@ -6,13 +6,14 @@ import { defineConfig, svgoOptimizer } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 
 import icon from 'astro-icon';
-import mermaid from './src/integrations/mermaid';
+import mermaid from './src/integrations/mermaid.ts';
 import {
+  codeBlockPlugin,
   externalLinksPlugin,
   figurePlugin,
   katexPlugin,
   mermaidPlugin,
-} from './src/lib/markdown/satteri-plugins';
+} from './src/lib/markdown/satteri-plugins.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -39,11 +40,11 @@ export default defineConfig({
       // mdast 阶段：KaTeX 渲染、mermaid 代码块转换
       mdastPlugins: [katexPlugin, mermaidPlugin],
       // hast 阶段：图片包裹 figure、外链属性（在内置 image-marker 之前运行）
-      hastPlugins: [figurePlugin, externalLinksPlugin],
+      hastPlugins: [figurePlugin, externalLinksPlugin, codeBlockPlugin],
     }),
     shikiConfig: {
       themes: {
-        light: 'dark-plus',
+        light: 'ayu-light',
         dark: 'dark-plus'
       },
     },

@@ -11,6 +11,7 @@
 // 一定能解析到，且本文件仅被 astro.config.mjs 以 JS 方式引入。
 
 import katex from 'katex';
+import { COPY_ICON } from '../copy-icon.ts';
 
 type Ctx = any;
 type Node = any;
@@ -106,3 +107,98 @@ export const figurePlugin = {
     },
   },
 };
+
+
+function hasCodeLines(node: Node): boolean {
+  return node.children?.some((child: Node) =>
+    child.tagName === 'code' && child.children?.some((line: Node) => {
+      const className = line.properties?.className ?? line.properties?.class;
+      return line.tagName === 'span' && className?.includes('line');
+    }),
+  ) ?? false;
+}
+
+function codeButton(className: string, label: string, icon: string, toggle = false) {
+  return {
+    type: 'element',
+    tagName: 'button',
+    properties: {
+      type: 'button',
+      className: [className],
+      'aria-label': label,
+      title: label,
+      ...(toggle ? { 'aria-pressed': 'false' } : {}),
+    },
+    children: [{ type: 'raw', value: icon }],
+  };
+}
+
+const LINE_NUMBERS_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>';
+const WRAP_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h12M3 18h18"/><path d="m15 10 3 3-3 3"/><path d="M18 13H9"/></svg>';
+export const codeBlockPlugin = {
+  name: 'code-block',
+  element: {
+    filter: ['pre'],
+    visit(node: Node, _ctx: Ctx) {
+      const hasLines = hasCodeLines(node);
+      const actions = [
+        ...(hasLines ? [codeButton('code-line-number-toggle', '显示行号', LINE_NUMBERS_ICON, true)] : []),
+        codeButton('code-wrap', '切换自动换行', WRAP_ICON, true),
+        codeButton('code-copy', '复制代码', COPY_ICON),
+      ];
+      return {
+        type: 'element',
+        tagName: 'div',
+        properties: { className: ['code-block'] },
+        children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: ['code-header'] },
+            children: [
+              {
+                type: 'element',
+                tagName: 'span',
+                properties: { className: ['code-language'] },
+                children: [{ type: 'text', value: languageLabel(node) }],
+              },
+              {
+                type: 'element',
+                tagName: 'span',
+                properties: { className: ['code-actions'] },
+                children: actions,
+              },
+            ],
+          },
+          node,
+        ],
+      };
+    },
+  },
+};
+
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  astro: 'Astro',
+  bash: 'Bash',
+  css: 'CSS',
+  html: 'HTML',
+  js: 'JavaScript',
+  json: 'JSON',
+  jsx: 'JSX',
+  md: 'Markdown',
+  mermaid: 'Mermaid',
+  python: 'Python',
+  sh: 'Shell',
+  ts: 'TypeScript',
+  tsx: 'TSX',
+};
+
+function languageLabel(node: Node): string {
+  const className = node.properties?.className;
+  if (typeof className === 'string' && className.includes('mermaid')) {
+    return 'Mermaid';
+  }
+  const language = node.properties?.dataLanguage ?? node.properties?.['data-language'] ?? 'code';
+  return LANGUAGE_LABELS[language] ?? language.toUpperCase();
+}

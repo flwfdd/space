@@ -53,6 +53,7 @@ type NoteNode =
 ## 样式与静态资源
 
 - Tailwind CSS v4 通过 `@tailwindcss/vite` 接入，配置入口为 `src/styles/global.css`。
+- `src/styles/design.css` 定义语义色、表面、文字、边线及基础组件样式。`src/data/notes/设计系统.md` 是面向使用者与 Agent 的设计规范，示例使用同一套样式。
 - `public/` 中的文件原样复制到构建产物，小型 SVG 同时作为 `astro-icon` 的本地图标。
 - 栅格图片、音频、视频和 PDF 默认使用 Git LFS；`public/*.svg` 直接由 Git 管理。
 - 路径别名 `@/*` 指向 `src/*`。

@@ -4,20 +4,64 @@ import type { AstroIntegration } from 'astro';
 // 动态加载 mermaid 渲染。主题跟随本项目的 <html> 上的 .dark 类切换。
 const CLIENT_SCRIPT = `
 let mermaidMod;
+function mermaidConfig(isDark) {
+  return {
+    startOnLoad: false,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Noto Sans SC, sans-serif',
+      fontSize: '14px',
+      primaryColor: isDark ? '#083344' : '#ffffff',
+      primaryTextColor: isDark ? '#ecfeff' : '#164e63',
+      secondaryColor: isDark ? '#00161c' : '#ffffff',
+      tertiaryColor: isDark ? '#00161c' : '#ffffff',
+      mainBkg: isDark ? '#083344' : '#ffffff',
+      secondBkg: isDark ? '#00161c' : '#ffffff',
+      clusterBkg: isDark ? '#00161c' : '#ffffff',
+      clusterBorder: isDark ? '#155e75' : '#e5e7eb',
+      edgeLabelBackground: isDark ? '#083344' : '#ffffff',
+      textColor: isDark ? '#ecfeff' : '#164e63',
+      actorTextColor: isDark ? '#ecfeff' : '#164e63',
+      signalTextColor: isDark ? '#ecfeff' : '#164e63',
+    },
+    themeCSS: \`
+      .node rect, .node polygon { stroke-width: 1px; rx: 6px; ry: 6px; }
+      .node text { font-weight: 400; }
+      .edgePath .path, .marker { stroke-width: 1.25px; }
+    \`,
+    flowchart: {
+      curve: 'basis',
+      htmlLabels: true,
+      padding: 12,
+      nodeSpacing: 40,
+      rankSpacing: 50,
+      useMaxWidth: true,
+    },
+  };
+}
 
 async function renderMermaid() {
   const nodes = document.querySelectorAll('pre.mermaid');
   if (nodes.length === 0) return;
 
-  mermaidMod ??= (await import('mermaid')).default;
+  try {
+    mermaidMod ??= (await import('mermaid')).default;
+  } catch (error) {
+    for (const node of nodes) {
+      const code = document.createElement('code');
+      code.textContent = 'Mermaid 加载失败: ' + (error && error.message ? error.message : error);
+      node.replaceChildren(code);
+    }
+    return;
+  }
   const isDark = document.documentElement.classList.contains('dark');
-  mermaidMod.initialize({ startOnLoad: false, theme: isDark ? 'dark' : 'default' });
 
   for (const node of nodes) {
     if (!node.dataset.diagram) node.dataset.diagram = node.textContent || '';
     const definition = node.dataset.diagram;
     const id = 'mermaid-' + Math.random().toString(36).slice(2, 11);
     try {
+      mermaidMod.initialize(mermaidConfig(isDark));
       const { svg } = await mermaidMod.render(id, definition);
       node.innerHTML = svg;
       node.setAttribute('data-processed', 'true');

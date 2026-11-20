@@ -70,3 +70,7 @@ Obsidian 模板使用：
 - 本地封面通过 `img` 填写相对路径，支持 `jpeg`、`jpg`、`png`、`gif` 和 `webp`。
 - 远程封面直接使用图片 URL。
 - 栅格图片默认进入 Git LFS，`public/*.svg` 直接提交文本。
+
+## 设计规范
+
+颜色、按钮、徽标、高亮、表单和折叠块遵循 `src/data/notes/设计系统.md`。文章中的示例与站点共用 `src/styles/design.css`，新增或修改组件时同步更新这篇文章。
