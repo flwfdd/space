@@ -60,6 +60,8 @@
     padding: 0;
     display: flex;
     justify-content: center;
+    max-height: 36rem;
+    overflow: auto;
 }
 
 .prose pre.mermaid svg {

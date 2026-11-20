@@ -37,6 +37,7 @@ Obsidian Markdown
 - `Time.astro`：输出语义化 `<time>`，静态内容按 `Asia/Shanghai` 兜底，随后由浏览器按客户端时区更新。
 - `ThemeToggle.astro`：处理 system、light、dark 三种状态；未存储偏好时视为 system。
 - `integrations/mermaid.ts`：仅在页面存在 Mermaid 代码块时动态加载渲染器。
+- `media-preview.ts`：统一处理正文图片和 Mermaid 的点击及键盘预览入口；`media-lightbox.ts` 在首次点击时加载 PhotoSwipe，复用现有图片和渲染后的 SVG。
 
 ## 笔记目录
 

@@ -645,3 +645,84 @@ textarea.field {
 .mermaid .marker {
   stroke-linejoin: round;
 }
+
+.media-preview-trigger {
+  cursor: zoom-in;
+}
+
+.media-preview-trigger:focus-visible {
+  outline: 2px solid var(--color-cyan-500);
+  outline-offset: 4px;
+}
+
+body:has(.pswp) > header,
+body:has(.pswp) > main,
+body:has(.pswp) > footer {
+  filter: blur(4px);
+  transition: filter 333ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.media-preview-closing > header,
+body.media-preview-closing > main,
+body.media-preview-closing > footer {
+  filter: blur(0);
+}
+
+.pswp {
+  --media-preview-control-color: rgb(255 255 255 / 100%);
+}
+
+.pswp .pswp__bg {
+  background: #000000;
+}
+
+.pswp .pswp__top-bar {
+  background: transparent;
+}
+
+.pswp .pswp__button {
+  border: 0;
+  background: transparent;
+  color: var(--media-preview-control-color);
+  box-shadow: none;
+  opacity: 1;
+  transition: color 80ms ease, opacity 80ms ease;
+}
+
+.pswp .pswp__button svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+}
+
+.pswp .pswp__button--arrow--prev svg {
+  left: 14px;
+  transform: translateY(-50%);
+}
+
+.pswp .pswp__button--arrow--next svg {
+  right: 14px;
+  left: auto;
+  transform: translateY(-50%);
+}
+
+.pswp .pswp__button:hover,
+.pswp .pswp__button:focus-visible {
+  background: transparent;
+  color: var(--color-cyan-300);
+  opacity: 1;
+}
+
+.pswp .pswp__button:focus-visible {
+  outline: 2px solid var(--color-cyan-300);
+  outline-offset: -2px;
+}
+
+.pswp .pswp__counter {
+  color: var(--media-preview-control-color);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}

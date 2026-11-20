@@ -42,6 +42,12 @@
 
 代码块按钮由 `codeBlockPlugin` 输出，`MarkdownContent.astro` 统一处理行号、自动换行、复制与状态反馈。块级公式和 Mermaid 的复制按钮也由 `MarkdownContent.astro` 在客户端挂载，分别读取 KaTeX 的 `annotation` 和 Mermaid 原始定义，避免二次解析渲染结果。这两类按钮在悬停内容区域时淡显，悬停按钮本身时高亮，触屏保持可见。
 
+## 媒体预览
+
+`src/lib/media-preview.ts` 为正文图片和 Mermaid 添加点击、Enter 和 Space 预览入口，链接图片与复制按钮不会被预览拦截。`src/lib/media-lightbox.ts` 在首次点击时加载 PhotoSwipe，图片与 Mermaid 通过 `dataSource` 共用同一个动态图库。
+
+Mermaid 正文默认限高 36rem。预览读取当前渲染后的 SVG，内联计算后的样式并生成 Blob URL，因此保留当前主题配色，并可使用图片缩放与拖动。关闭预览后销毁图库并释放 Blob URL。预览使用 PhotoSwipe 原生 zoom 展开与收回，Mermaid 使用 fade；触摸、滚轮和触控板缩放保持原生支持，工具栏可连续放大和缩小，默认最大为原始尺寸的 4 倍。背景通过 `bgOpacity: 0.35` 和页面内容的 `filter: blur(4px)` 与抽屉保持一致，关闭动画开始时同步淡出，不引入其他插件或自定义动画。
+
 ## 修改后的验证
 
 先运行：

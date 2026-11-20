@@ -47,6 +47,10 @@ pnpm preview
 
 Mermaid 12 的部分动态分包超过 500 kB，构建会显示 chunk 大小提示。这些代码只由包含图表的页面加载，不影响普通页面的首屏 JavaScript。
 
+### PhotoSwipe
+
+媒体预览使用 PhotoSwipe 5（MIT），首次点击时动态加载 Lightbox 和核心模块，支持触摸、滚轮和触控板缩放。
+
 ## 升级检查
 
 1. 阅读更新日志和 peer 依赖要求，重点检查 Astro、Sätteri、Loader、Mermaid 和 TypeScript。

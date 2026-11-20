@@ -70,6 +70,7 @@ Obsidian 模板使用：
 - 本地封面通过 `img` 填写相对路径，支持 `jpeg`、`jpg`、`png`、`gif` 和 `webp`。
 - 远程封面直接使用图片 URL。
 - 栅格图片默认进入 Git LFS，`public/*.svg` 直接提交文本。
+- 正文图片和 Mermaid 支持点击或按 Enter 全屏预览，可双指缩放、拖动查看，Esc 关闭；已有链接的图片保留原跳转。
 
 ## 设计规范
 
