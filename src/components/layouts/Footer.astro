@@ -10,16 +10,53 @@ const { class: className = "" } = Astro.props;
 
 <footer
   class={`
-  w-full mt-16
+  relative mt-16 overflow-hidden
   ${className}
 `}
 >
-  <div class="w-full h-2 bg-cyan-500/10"></div>
-  <div class="w-full h-3 bg-cyan-500/20"></div>
-  <div class="w-full h-4 bg-cyan-500/30"></div>
-  <div class="w-full h-5 bg-cyan-500/40"></div>
-  <div class="w-full bg-cyan-500/50">
-    <div class="flex flex-col items-center space-y-2 max-w-6xl mx-auto p-6">
+  <div class="footer-wave relative w-full text-white" style="height: 6rem">
+    <svg class="absolute inset-0 h-full w-full" viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <path id="footer-wave-2" d="M0 22C160 4 380 30 600 16S860 6 1000 22V200H0Z" fill="var(--color-cyan-500)" opacity="0.16" />
+        <path id="footer-wave-3" d="M0 42C120 24 300 56 480 36S760 22 1000 42V200H0Z" fill="var(--color-cyan-500)" opacity="0.28" />
+        <path id="footer-wave-4" d="M0 64C200 82 360 38 560 58S820 78 1000 64V200H0Z" fill="var(--color-cyan-500)" opacity="0.42" />
+        <path id="footer-wave-5" d="M0 92C180 60 420 112 640 78S880 66 1000 92V200H0Z" fill="var(--color-cyan-500)" opacity="0.58" />
+        <path id="footer-wave-6" d="M0 122C150 100 350 140 540 116S790 102 1000 122V200H0Z" fill="var(--color-cyan-700)" opacity="0.72" />
+        <path id="footer-wave-7" d="M0 150C220 128 430 166 660 146S860 136 1000 150V200H0Z" fill="var(--color-cyan-700)" opacity="0.88" />
+        <path id="footer-wave-8" d="M0 160C180 140 400 176 620 156S840 144 1000 160V200H0Z" fill="var(--color-cyan-900)" opacity="1" />
+      </defs>
+      <path d="M0 0H1000V200H0Z" fill="var(--color-cyan-500)" opacity="0.08" />
+    </svg>
+
+    <svg class="footer-wave-layer" style="animation-duration: 7s" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-2" />
+      <use href="#footer-wave-2" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 10s" data-direction="right" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-3" />
+      <use href="#footer-wave-3" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 6s" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-4" />
+      <use href="#footer-wave-4" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 11s" data-direction="right" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-5" />
+      <use href="#footer-wave-5" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 8s" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-6" />
+      <use href="#footer-wave-6" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 13s" data-direction="right" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-7" />
+      <use href="#footer-wave-7" x="1000" />
+    </svg>
+    <svg class="footer-wave-layer" style="animation-duration: 9s" viewBox="0 0 2000 200" preserveAspectRatio="none" aria-hidden="true">
+      <use href="#footer-wave-8" />
+      <use href="#footer-wave-8" x="1000" />
+    </svg>
+    <div class="absolute inset-x-0 bottom-[-1.5rem] z-10 mx-auto flex max-w-6xl flex-col items-center space-y-2 px-4 pb-2">
       <div class="text-center space-y-3">
         <p>Made with ❤️ by flwfdd</p>
       </div>
@@ -29,7 +66,7 @@ const { class: className = "" } = Astro.props;
           href="https://github.com/flwfdd"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex items-center space-x-2 text-sm hover:text-cyan-500"
+          class="group flex items-center space-x-2 text-sm hover:text-cyan-300"
         >
           <Icon
             name="mdi:github"
@@ -40,7 +77,7 @@ const { class: className = "" } = Astro.props;
 
         <a
           href="mailto:flwfdd@qq.com"
-          class="group flex items-center space-x-2 text-sm hover:text-cyan-500"
+          class="group flex items-center space-x-2 text-sm hover:text-cyan-300"
         >
           <Icon
             name="mdi:email"
@@ -51,4 +88,92 @@ const { class: className = "" } = Astro.props;
       </div>
     </div>
   </div>
+  <div class="h-10 bg-[var(--color-cyan-900)]" aria-hidden="true"></div>
+
+  <script>
+    const TAU = Math.PI * 2;
+    const PERIOD = 4000;
+    const layers = [
+      { id: "footer-wave-2", baseline: 20 },
+      { id: "footer-wave-3", baseline: 52 },
+      { id: "footer-wave-4", baseline: 84 },
+      { id: "footer-wave-5", baseline: 116 },
+      { id: "footer-wave-6", baseline: 148 },
+      { id: "footer-wave-7", baseline: 176 },
+      { id: "footer-wave-8", baseline: 196 },
+    ];
+
+    const random = (min: number, max: number) => min + Math.random() * (max - min);
+    const randomInt = (min: number, max: number) => Math.floor(random(min, max + 1));
+
+    function createWavePath(baseline: number) {
+      const frequencyA = randomInt(1, 3);
+      const frequencyB = frequencyA + randomInt(1, 2);
+      const phaseA = random(0, TAU);
+      const phaseB = random(0, TAU);
+      const amplitudeA = random(8, 13);
+      const amplitudeB = random(3, 7);
+      const modulation = random(0.25, 0.85);
+      const modulationPhase = random(0, TAU);
+      const points: string[] = [];
+
+      for (let x = 0; x <= PERIOD; x += 20) {
+        const position = x / PERIOD;
+        const frequencyDrift = modulation * Math.sin(TAU * position + modulationPhase);
+        const angleA = TAU * frequencyA * position + frequencyDrift;
+        const angleB = TAU * frequencyB * position + frequencyDrift * 0.5;
+        const y = baseline
+          + amplitudeA * Math.sin(angleA + phaseA)
+          + amplitudeB * Math.sin(angleB + phaseB);
+        points.push(`${x === 0 ? "M" : "L"}${x} ${y.toFixed(2)}`);
+      }
+
+      return `${points.join(" ")}V200H0Z`;
+    }
+
+    layers.forEach((layer, index) => {
+      document.getElementById(layer.id)?.setAttribute("d", createWavePath(layer.baseline + random(-4, 4)));
+      const element = document.querySelector<SVGElement>(`.footer-wave-layer:nth-of-type(${index + 2})`);
+      if (element) {
+        element.setAttribute("viewBox", "0 0 8000 200");
+        element.style.width = "600%";
+        element.querySelectorAll("use")[1]?.setAttribute("x", "4000");
+        element.style.animationDuration = `${random(30, 60).toFixed(2)}s`;
+        element.dataset.direction = Math.random() < 0.5 ? "left" : "right";
+      }
+    });
+  </script>
+
+  <style>
+    .footer-wave-layer {
+      position: absolute;
+      inset: 0;
+      width: 200%;
+      height: 100%;
+      pointer-events: none;
+      animation-name: footer-wave-left;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    .footer-wave-layer[data-direction="right"] {
+      animation-name: footer-wave-right;
+    }
+
+    @keyframes footer-wave-left {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @keyframes footer-wave-right {
+      from { transform: translateX(-50%); }
+      to { transform: translateX(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .footer-wave-layer {
+        animation: none;
+      }
+    }
+  </style>
 </footer>

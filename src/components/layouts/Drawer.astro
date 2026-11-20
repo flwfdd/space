@@ -8,6 +8,7 @@ export interface Props {
   side?: "left" | "right";
   class?: string;
   triggerClass?: string;
+  showHeader?: boolean;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   side = "right",
   class: className = "",
   triggerClass = "",
+  showHeader = true,
 } = Astro.props;
 ---
 
@@ -40,12 +42,12 @@ const {
     aria-label={label}
     class="p-0 bg-gray-100 text-cyan-900 dark:bg-[#00161C] dark:text-cyan-50"
   >
-    <div class="flex items-center justify-between border-b border-cyan-500/20 p-4">
-      <span class="font-bold">{label}</span>
+    <div class={showHeader ? "flex items-center justify-between border-b border-cyan-500/20 p-4" : "absolute right-4 top-3 z-10"}>
+      {showHeader && <span class="font-bold">{label}</span>}
       <button
         type="button"
         data-drawer-close
-        class="rounded-lg p-2 hover:bg-cyan-500/10"
+        class="btn btn-ghost btn-icon size-10"
         aria-label={`关闭${label}`}
       >
         <Icon name="mdi:close" class="size-6" />
@@ -117,6 +119,11 @@ const {
   dialog[open] {
     display: flex;
     flex-direction: column;
+  }
+
+  dialog :global(aside) {
+    position: static;
+    max-height: none;
   }
 
   dialog[data-side="left"] {

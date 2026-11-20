@@ -50,8 +50,9 @@ const {
           label="笔记目录"
           triggerLabel="打开笔记目录"
           side="left"
+          showHeader={false}
           class="lg:hidden"
-          triggerClass="fixed bottom-6 left-6 z-30 size-12 rounded-lg flex items-center justify-center text-cyan-500 bg-cyan-500/10 backdrop-blur-sm"
+          triggerClass="btn btn-icon fixed bottom-6 left-6 z-30 size-12 backdrop-blur-sm"
         >
           <Icon slot="trigger" name="mdi:file-tree" class="size-6" />
           <NotesIndex currentPath={currentPath} />
@@ -66,8 +67,9 @@ const {
           label="大纲"
           triggerLabel="打开大纲"
           side="right"
+          showHeader={false}
           class="xl:hidden"
-          triggerClass="fixed bottom-6 right-6 z-30 size-12 rounded-lg flex items-center justify-center text-cyan-500 bg-cyan-500/10 backdrop-blur-sm"
+          triggerClass="btn btn-icon fixed bottom-6 right-6 z-30 size-12 backdrop-blur-sm"
         >
           <Icon slot="trigger" name="mdi:table-of-contents" class="size-6" />
           <TableOfContents headings={headings} />

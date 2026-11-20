@@ -32,7 +32,7 @@ Obsidian Markdown
 
 项目不设置全局 hydration 框架，交互使用原生浏览器能力：
 
-- `Drawer.astro`：使用 `<dialog>` 实现菜单、目录和大纲抽屉，统一处理 Escape、遮罩、焦点、关闭按钮和背景滚动。
+- `Drawer.astro`：使用 `<dialog>` 实现菜单、目录和大纲抽屉，统一处理 Escape、遮罩、焦点、关闭按钮和背景滚动。`showHeader={false}` 隐藏标题栏和分隔线，关闭按钮悬浮在右上角。
 - `NoteTree.astro`：递归渲染目录树，使用 `<details>` 展开文件夹，不需要目录脚本。
 - `Time.astro`：输出语义化 `<time>`，静态内容按 `Asia/Shanghai` 兜底，随后由浏览器按客户端时区更新。
 - `ThemeToggle.astro`：处理 system、light、dark 三种状态；未存储偏好时视为 system。
@@ -54,7 +54,8 @@ type NoteNode =
 ## 样式与静态资源
 
 - Tailwind CSS v4 通过 `@tailwindcss/vite` 接入，配置入口为 `src/styles/global.css`。
-- `src/styles/design.css` 定义语义色、表面、文字、边线及基础组件样式。`src/data/notes/设计系统.md` 是面向使用者与 Agent 的设计规范，示例使用同一套样式。
+- `src/styles/design.css` 定义语义色、表面、文字、边线、基础组件和 Markdown 正文样式。`heading-1`、`heading-2` 等通用类可全局复用，`.prose` 规则仅作用于 Markdown 正文。`src/data/notes/设计系统.md` 是面向使用者与 Agent 的设计规范，示例使用同一套样式。
+- `MarkdownContent.astro` 负责正文容器、复制按钮和媒体预览初始化。
 - `public/` 中的文件原样复制到构建产物，小型 SVG 同时作为 `astro-icon` 的本地图标。
 - 栅格图片、音频、视频和 PDF 默认使用 Git LFS；`public/*.svg` 直接由 Git 管理。
 - 路径别名 `@/*` 指向 `src/*`。

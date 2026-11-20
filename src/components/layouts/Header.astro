@@ -25,7 +25,7 @@ const menus = [
             <li>
               <a
                 href={menu.href}
-                class="px-4 py-2 rounded-lg font-bold hover:text-cyan-600 hover:bg-cyan-500/10 transition-all duration-100"
+                class="btn btn-ghost"
               >
                 {menu.name}
               </a>
@@ -41,7 +41,7 @@ const menus = [
       triggerLabel="打开菜单"
       side="right"
       class="sm:hidden"
-      triggerClass="flex items-center justify-center rounded-lg p-2 hover:bg-cyan-500/10"
+      triggerClass="btn btn-ghost btn-icon size-10"
     >
       <Icon slot="trigger" name="mdi:menu" class="size-6" />
       <nav aria-label="移动端导航">
@@ -51,7 +51,7 @@ const menus = [
               <li>
                 <a
                   href={menu.href}
-                  class="block rounded-xl px-6 py-3 text-center text-lg font-bold hover:bg-cyan-500/10"
+                  class="btn btn-ghost w-full"
                 >
                   {menu.name}
                 </a>

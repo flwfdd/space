@@ -24,9 +24,8 @@ const notes = (await getCollection("notes"))
           notes.slice(0, 10).map((note) => (
             <a
               class="flex items-center justify-between p-1 sm:p-3 space-x-2 rounded-lg
-              
-                hover:text-cyan-500 hover:bg-cyan-500/10
-                transition-all duration-200"
+                hover:bg-[var(--color-list-hover)]
+                transition-colors duration-100"
               href={`/notes/${note.id}`}
             >
               <span class="flex flex-1 items-center space-x-2 truncate">
