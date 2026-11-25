@@ -65,5 +65,5 @@ type NoteNode =
 - `src/styles/image-viewer.css` 随共用查看器按需加载，统一控件外观与过渡；`media-lightbox.css` 仅负责笔记预览的页面模糊背景。
 - `MarkdownContent.astro` 负责正文容器、复制按钮和媒体预览初始化。
 - `public/` 中的文件原样复制到构建产物，小型 SVG 同时作为 `astro-icon` 的本地图标。
-- 栅格图片、音频、视频和 PDF 默认使用 Git LFS；`public/*.svg` 直接由 Git 管理。
+- 栅格图片、音频、视频和 PDF 默认使用 Git LFS；`public/**/*.svg`（包括子目录）直接由 Git 管理。
 - 路径别名 `@/*` 指向 `src/*`。
