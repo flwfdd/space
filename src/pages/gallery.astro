@@ -1,0 +1,96 @@
+---
+import InlineMarkdown from "@/components/gallery/InlineMarkdown.astro";
+import Time from "@/components/Time.astro";
+import Layout from "@/layouts/Layout.astro";
+import { galleryPhotos } from "@/data/gallery";
+import { getGalleryImageUrl } from "@/lib/gallery";
+import { Icon } from "astro-icon/components";
+import "@/styles/gallery.css";
+
+const photos = galleryPhotos;
+---
+
+<Layout
+  title="Gallery - flwfdd'space"
+  description="一些照片，和它们发生的地方。"
+>
+  <section class="gallery-page" data-gallery>
+    <header class="gallery-intro">
+      <p class="gallery-kicker">GALLERY</p>
+      <div class="gallery-heading-row">
+        <h1>Gallery</h1>
+        <span class="gallery-count">{String(photos.length).padStart(2, "0")} frames</span>
+      </div>
+      <p class="gallery-lede">一些照片，和它们发生的地方。</p>
+    </header>
+
+    {
+      photos.length > 0 ? (
+        <ul class="gallery-grid" aria-label="照片列表">
+          {
+            photos.map((photo, index) => (
+              <li class="gallery-card">
+                <a
+                  class="gallery-item"
+                  href={getGalleryImageUrl(photo, "high")}
+                  data-gallery-trigger
+                  data-gallery-index={index}
+                  aria-label={`查看照片：${photo.title ?? "未命名"}`}
+                >
+                  <span
+                    class="gallery-item-media"
+                    style={`--gallery-ratio: ${photo.width ?? 3} / ${photo.height ?? 2}`}
+                  >
+                    <img
+                      src={getGalleryImageUrl(photo, "mid")}
+                      alt={photo.title ?? "Gallery photo"}
+                      width={photo.width}
+                      height={photo.height}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      fetchpriority={index === 0 ? "high" : undefined}
+                      decoding="async"
+                    />
+                  </span>
+                </a>
+
+                <div class="gallery-card-caption">
+                  <h2 class="gallery-card-title">{photo.title ?? "未命名"}</h2>
+                  {photo.description && (
+                    <p class="gallery-card-description">
+                      <InlineMarkdown value={photo.description} />
+                    </p>
+                  )}
+                  {(photo.location || (photo.tags && photo.tags.length > 0)) && (
+                    <div class="gallery-card-meta">
+                      {photo.location && (
+                        <p class="gallery-card-location">
+                          <Icon name="mdi:map-marker-outline" class="gallery-location-icon" aria-hidden="true" />
+                          <span>{photo.location.name}</span>
+                        </p>
+                      )}
+                      {photo.tags && photo.tags.length > 0 && (
+                        <div class="gallery-card-tags" aria-label="标签">
+                          {photo.tags.map((tag) => <span>{tag}</span>)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {photo.capturedAt && (
+                    <span class="gallery-card-date"><Time date={photo.capturedAt} /></span>
+                  )}
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      ) : (
+        <p class="gallery-empty">还没有照片。</p>
+      )
+    }
+  </section>
+
+  <script>
+    import { initGallery } from "@/lib/gallery-client";
+    initGallery();
+  </script>
+</Layout>

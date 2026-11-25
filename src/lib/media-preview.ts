@@ -1,3 +1,5 @@
+import { launchImageViewer } from "@/lib/image-viewer-launch";
+
 const TRIGGER_SELECTOR = ".prose img, .prose pre.mermaid";
 
 function canPreview(element: HTMLElement): boolean {
@@ -10,20 +12,16 @@ function previewLabel(element: HTMLElement): string {
 }
 
 async function openPreview(trigger: HTMLElement) {
-  if (trigger.dataset.previewLoading) return;
-  trigger.dataset.previewLoading = "true";
-  trigger.setAttribute("aria-busy", "true");
   try {
-    const { openMediaLightbox } = await import("./media-lightbox");
-    openMediaLightbox(trigger);
+    await launchImageViewer(trigger, async () => {
+      const { openMediaLightbox } = await import("./media-lightbox");
+      await openMediaLightbox(trigger);
+    });
   } catch (error) {
     console.error("媒体预览加载失败", error);
     if (trigger instanceof HTMLImageElement) {
       window.open(trigger.currentSrc || trigger.src, "_blank", "noopener");
     }
-  } finally {
-    delete trigger.dataset.previewLoading;
-    trigger.removeAttribute("aria-busy");
   }
 }
 
@@ -43,6 +41,7 @@ export function initMediaPreview(root: ParentNode = document) {
     });
     trigger.addEventListener("keydown", (event) => {
       if (event.key !== "Enter" && event.key !== " ") return;
+      if (event.target instanceof Element && event.target.closest("button, a")) return;
       event.preventDefault();
       void openPreview(trigger);
     });

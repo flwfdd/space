@@ -44,3 +44,11 @@ export function formatDate(
     ? `${date} ${part("hour")}:${part("minute")}`
     : date;
 }
+
+export function formatUtcOffset(value: DateInput): string {
+  const offset = -parseDate(value).getTimezoneOffset();
+  const absolute = Math.abs(offset);
+  const hours = Math.floor(absolute / 60);
+  const minutes = absolute % 60;
+  return `UTC${offset < 0 ? "-" : "+"}${hours}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""}`;
+}

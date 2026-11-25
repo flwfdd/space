@@ -44,9 +44,11 @@
 
 ## 媒体预览
 
-`src/lib/media-preview.ts` 为正文图片和 Mermaid 添加点击、Enter 和 Space 预览入口，链接图片与复制按钮不会被预览拦截。`src/lib/media-lightbox.ts` 在首次点击时加载 PhotoSwipe，图片与 Mermaid 通过 `dataSource` 共用同一个动态图库。
+`src/lib/media-preview.ts` 为正文图片和 Mermaid 添加点击、Enter 和 Space 预览入口，链接图片与复制按钮不会被预览拦截。`src/lib/media-lightbox.ts` 收集图片和图表，通过 `dataSource` 共用同一个动态图库；首次点击时加载与 Gallery 共用的 `image-viewer.ts`。两边共用 `image-viewer-launch.ts` 的重复点击保护，加载失败时恢复入口状态。
 
-Mermaid 正文默认限高 36rem。预览读取当前渲染后的 SVG，内联计算后的样式并生成 Blob URL，因此保留当前主题配色，并可使用图片缩放与拖动。关闭预览后销毁图库并释放 Blob URL。预览使用 PhotoSwipe 原生 zoom 展开与收回，Mermaid 使用 fade；触摸、滚轮和触控板缩放保持原生支持，工具栏可连续放大和缩小，默认最大为原始尺寸的 4 倍。背景通过 `bgOpacity: 0.35` 和页面内容的 `filter: blur(4px)` 与抽屉保持一致，关闭动画开始时同步淡出，不引入其他插件或自定义动画。
+Mermaid 正文默认限高 36rem。预览读取当前渲染后的 SVG，内联计算后的样式并生成 Blob URL，因此保留当前主题配色，并可使用图片缩放与拖动。关闭预览后销毁图库并释放 Blob URL。图片使用 PhotoSwipe 原生 zoom 展开与收回，Mermaid 使用 fade；切换内容后按当前项选择关闭方式。展开为 320ms、收回为 400ms，使用共用强减速曲线 `cubic-bezier(0.1, 1, 0.2, 1)`，缩放过渡期间临时隐藏正文原图以避免重影。减少动态效果时停用动画。
+
+触摸、滚轮和触控板缩放保持原生支持，工具栏可连续放大和缩小，默认最大为原始尺寸的 4 倍。共用查看器统一工具栏样式，无操作 2.6 秒后隐藏控件，键盘聚焦的控件保持可见。笔记背景通过 `bgOpacity: 0.35` 和页面内容的 `filter: blur(4px)` 与抽屉保持一致，关闭动画开始时同步淡出。查看器样式按需加载，正文入口的焦点与光标样式留在全局设计样式中。
 
 ## 修改后的验证
 

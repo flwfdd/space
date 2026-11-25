@@ -1,0 +1,15 @@
+body:has(.media-pswp) > :is(header, main, footer) {
+  filter: blur(4px);
+  transition: filter 320ms ease-out;
+}
+
+body.media-preview-closing > :is(header, main, footer) {
+  filter: blur(0);
+  transition-duration: 400ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.media-pswp) > :is(header, main, footer) {
+    transition: none;
+  }
+}

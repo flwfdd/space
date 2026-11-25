@@ -1,7 +1,7 @@
-import PhotoSwipeLightbox from "photoswipe/lightbox";
 import type PhotoSwipe from "photoswipe";
 import type { SlideData } from "photoswipe";
-import "photoswipe/style.css";
+import { createImageViewer, prefersReducedMotion } from "@/lib/image-viewer";
+import "@/styles/media-lightbox.css";
 
 type MediaEntry = {
   trigger: HTMLElement;
@@ -109,7 +109,7 @@ function revokeMediaUrls(entries: MediaEntry[]) {
   }
 }
 
-export function openMediaLightbox(trigger: HTMLElement) {
+export async function openMediaLightbox(trigger: HTMLElement): Promise<void> {
   const entries = collectMediaItems(trigger);
   const index = entries.findIndex((entry) => entry.trigger === trigger);
   if (index < 0) {
@@ -117,50 +117,26 @@ export function openMediaLightbox(trigger: HTMLElement) {
     return;
   }
 
-  const lightbox = new PhotoSwipeLightbox({
+  const { lightbox } = await createImageViewer({
+    mainClass: "media-pswp",
     dataSource: entries.map((entry) => entry.item),
-    pswpModule: () => import("photoswipe"),
     showHideAnimationType: trigger.matches("pre.mermaid") ? "fade" : "zoom",
-    zoomAnimationDuration: 220,
-    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
     bgOpacity: 0.35,
-    wheelToZoom: true,
     padding: { top: 48, right: 24, bottom: 24, left: 24 },
     counter: entries.length > 1,
     arrowPrev: entries.length > 1,
     arrowNext: entries.length > 1,
-    close: true,
-    zoom: false,
-    closeTitle: "关闭",
-    arrowPrevTitle: "上一项",
-    arrowNextTitle: "下一项",
-    closeSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-    arrowPrevSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>',
-    arrowNextSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+  }, entries.map((entry) => entry.trigger)).catch((error: unknown) => {
+    revokeMediaUrls(entries);
+    throw error;
   });
 
-  lightbox.on("uiRegister", function (this: PhotoSwipe) {
-    const zoomByFactor = (factor: number) => {
-      const slide = this.currSlide;
-      if (slide) this.zoomTo(slide.currZoomLevel * factor);
-    };
-
-    this.ui?.registerElement({
-      name: "zoomIn",
-      order: 10,
-      isButton: true,
-      title: "放大",
-      html: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
-      onClick: () => zoomByFactor(1.25),
-    });
-    this.ui?.registerElement({
-      name: "zoomOut",
-      order: 15,
-      isButton: true,
-      title: "缩小",
-      html: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>',
-      onClick: () => zoomByFactor(0.8),
-    });
+  lightbox.on("close", function (this: PhotoSwipe) {
+    // A note can mix photos and diagrams; close according to the current item.
+    if (prefersReducedMotion() || this.options.showHideAnimationType === "none") return;
+    const isDiagram = entries[this.currIndex]?.trigger.matches("pre.mermaid");
+    this.options.showHideAnimationType = isDiagram ? "fade" : "zoom";
+    this.options.showHideOpacity = Boolean(isDiagram);
   });
   lightbox.on("openingAnimationStart", () => {
     document.body.classList.remove("media-preview-closing");

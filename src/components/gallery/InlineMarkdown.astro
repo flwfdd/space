@@ -1,0 +1,27 @@
+---
+import { isExternalHref, parseInlineMarkdown } from "@/lib/inline-markdown";
+
+interface Props {
+  value: string;
+}
+
+const { value } = Astro.props;
+---
+
+<span>
+  {
+    parseInlineMarkdown(value).map((part) =>
+      part.type === "link" ? (
+        <a
+          href={part.href}
+          target={isExternalHref(part.href) ? "_blank" : undefined}
+          rel={isExternalHref(part.href) ? "noreferrer" : undefined}
+        >
+          {part.label}
+        </a>
+      ) : (
+        part.value
+      ),
+    )
+  }
+</span>

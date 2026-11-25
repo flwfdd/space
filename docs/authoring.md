@@ -32,6 +32,35 @@ updated: 2025-09-16T18:59:11+08:00
 
 Loader 会补充 `slug`、`permalink` 等字段。项目的 Zod Schema 会保留这些扩展字段。
 
+## Gallery
+
+Gallery 页面位于 `/gallery`，照片条目维护在 `src/data/gallery.ts`。数组顺序就是页面顺序；每张照片只需要一个 `filename` 作为稳定标识。
+
+正式数据中，`filename` 填 ZenGallery 返回的文件名，例如 `abc123.jpg`。Space 会按标准公开接口生成：
+
+- `https://gallery.0u0.fun/files/<filename>?level=mid`：照片墙与查看器占位图。
+- `https://gallery.0u0.fun/files/<filename>?level=high`：全屏高清图。
+- `https://gallery.0u0.fun/share/<filename>`：图片来源页。
+
+也可以直接填完整 HTTP(S) URL 或站内 `/...` 路径。这类地址不经过 ZenGallery；远程地址可使用 `{width}`、`{height}`、`{quality}` 占位符生成分级图片。
+
+照片字段：
+
+| 字段 | 约定 |
+| --- | --- |
+| `filename` | ZenGallery 文件名、完整图片 URL 或站内路径，必填 |
+| `title` | 照片标题，可留空 |
+| `description` | 简介，可留空；支持 `[文字](链接)` 行内语法 |
+| `capturedAt` | 拍摄时间，必须带时区 |
+| `location` | 可省略；填写时须提供 `name`，`latitude`、`longitude`、`altitude` 可选 |
+| `exif` | `camera`、`lens`、`focalLength`、`aperture`、`shutterSpeed`、`iso`，均可选 |
+| `tags` | 纯字符串数组，可留空 |
+| `width`、`height` | 可选，用于提前预留照片比例 |
+| `size` | 可选，文件大小，单位为字节 |
+| `format` | 可选，图片格式，例如 `JPEG`、`WEBP` |
+
+照片条目类型定义在 `src/lib/gallery.ts`。不设置 `alt` 字段；页面使用标题作为 HTML `alt` 的兜底文本。来源链接由 `filename` 自动推导，不单独设置字段；其他相关链接写入 `description`。查看器按客户端时区显示拍摄时间，并单列 UTC 偏移。查看器中的“加载原图”会请求 `/files/<filename>` 并显示流式下载进度。仓库中的示例照片使用远程演示地址，前两张为本地纯色测试图；正式数据替换成 ZenGallery 文件名即可。
+
 ## 时间
 
 统一使用带时区的 ISO 8601 时间：

@@ -27,7 +27,7 @@ Agent 修改本仓库前，先阅读本文件和与任务相关的 `docs/` 文�
 | 移动端抽屉 | 统一使用 `src/components/layouts/Drawer.astro` 的原生 `<dialog>` |
 | 笔记目录 | 使用 `src/lib/note-tree.ts` 和 `NoteTree.astro`，文件夹展开使用原生 `<details>` |
 | 本地 SVG | 放在 `public/`，同时支持静态引用和 `astro-icon`；小型 SVG 不走 Git LFS |
-| 媒体预览 | 使用 `src/lib/media-preview.ts` 和 `media-lightbox.ts`，首次点击时加载 PhotoSwipe；实现说明见 `docs/markdown.md` |
+| 媒体预览 | Gallery 与笔记共用 `src/lib/image-viewer.ts` 的动画和控件；笔记入口与数据由 `media-preview.ts`、`media-lightbox.ts` 处理；实现说明见 `docs/markdown.md` |
 | 模块引用 | 使用 `@/*` 映射到 `src/*` |
 | 样式 | Tailwind CSS v4，配置入口为 `src/styles/global.css` |
 

@@ -1,6 +1,6 @@
 # flwfdd'Space
 
-基于 Astro 的个人静态知识空间。内容以 Obsidian Markdown 笔记为主，支持 KaTeX、Mermaid、代码高亮、明暗主题、响应式目录和客户端时区显示。
+基于 Astro 的个人静态知识空间。内容以 Obsidian Markdown 笔记为主，支持 KaTeX、Mermaid、代码高亮、Gallery、明暗主题、响应式目录和客户端时区显示。
 
 ## 技术栈
 
@@ -65,7 +65,7 @@ updated: 2025-09-16T18:59:11+08:00
 ```text
 src/
   components/        Astro 组件、Time、Drawer 和笔记目录
-  data/notes/        Obsidian Markdown 与本地媒体
+  data/              笔记与 Gallery 数据
   integrations/      客户端集成
   layouts/           页面布局
   lib/               日期、目录树、路径和 Markdown 工具
