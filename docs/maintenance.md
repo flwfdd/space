@@ -51,6 +51,10 @@ Mermaid 12 的部分动态分包超过 500 kB，构建会显示 chunk 大小提�
 
 媒体预览使用 PhotoSwipe 5（MIT），首次点击时动态加载 Lightbox 和核心模块，支持触摸、滚轮和触控板缩放。
 
+### 足迹地图
+
+MapLibre GL JS 6.19.0（BSD-3-Clause）只在足迹页面激活后加载，Worker 由 Vite 单独打包。h3-js 与 csv-parse 为本地导入依赖，GeoJSON 类型通过 `@types/geojson` 提供。公开的足迹数据和国家轮廓 JSON 使用 Git LFS；新克隆或 CI 构建前执行 `git lfs pull`，确保构建复制的是完整数据。导入及部署说明见 [footprints.md](footprints.md)。
+
 ## 升级检查
 
 1. 阅读更新日志和 peer 依赖要求，重点检查 Astro、Sätteri、Loader、Mermaid 和 TypeScript。

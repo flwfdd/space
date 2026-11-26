@@ -1,0 +1,70 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "@/layouts/Layout.astro";
+import { FOOTPRINT_LEVEL_COUNT } from "@/lib/footprints";
+import "@/styles/footprints.css";
+---
+
+<Layout title="足迹 · flwfdd'space" description="一些走过的地方，留在这颗小小的地球上。" immersive>
+  <section class="footprints" data-footprints aria-label="足迹地图与年度统计">
+    <div class="footprints-map" data-map></div>
+
+    <header class="footprints-intro">
+      <p class="footprints-eyebrow">FOOTPRINTS</p>
+      <h1>走过的<br />地方<span>。</span></h1>
+      <p class="footprints-lede">把时间留给路途，<br />把足迹留在这里。</p>
+      <div class="footprints-stats" aria-live="polite" aria-atomic="true">
+        <div><strong data-distance>—</strong><span data-distance-label>总距离 · km</span><small>按定位记录累计</small></div>
+        <div><strong data-records>—</strong><span data-records-label>总记录点</span></div>
+      </div>
+      <p class="footprints-period" data-period>正在展开这份地图</p>
+    </header>
+
+    <div class="footprints-status" data-status role="status">
+      <span class="footprints-loading" aria-hidden="true"></span>
+      <p data-status-message>正在点亮足迹</p>
+      <button type="button" class="btn" data-retry hidden>重新加载</button>
+    </div>
+
+    <aside class="footprints-selection" data-selection hidden aria-label="所选区域">
+      <button type="button" data-close-selection class="btn btn-ghost btn-icon footprints-icon" aria-label="取消区域选择">
+        <Icon name="mdi:close" />
+      </button>
+      <span class="footprints-eyebrow">FOOTPRINT</span>
+      <h2 data-selection-title>所选区域</h2>
+      <p>足迹强度 <strong data-selection-level></strong> / {FOOTPRINT_LEVEL_COUNT}</p>
+    </aside>
+
+    <div class="footprints-controls" aria-label="地图控制">
+      <button type="button" data-map-action="home" class="btn btn-ghost btn-icon footprints-icon" aria-label="回到地球全景" title="回到地球全景"><Icon name="mdi:earth" /></button>
+      <span></span>
+      <button type="button" data-map-action="in" class="btn btn-ghost btn-icon footprints-icon" aria-label="放大地图" title="放大"><Icon name="mdi:plus" /></button>
+      <button type="button" data-map-action="out" class="btn btn-ghost btn-icon footprints-icon" aria-label="缩小地图" title="缩小"><Icon name="mdi:minus" /></button>
+    </div>
+
+    <footer class="footprints-bottom">
+      <div class="footprints-timeline-heading">
+        <div><span class="footprints-eyebrow">YEARLY TOTALS</span><span data-year-label>累计统计</span></div>
+        <span class="footprints-hint">拖动探索 · 滚动缩放</span>
+      </div>
+      <div class="footprints-years" role="group" aria-label="选择统计年份" data-years></div>
+      <div class="footprints-colophon">
+        <span><i></i> 地图展示全部足迹</span>
+        <span class="footprints-credits">
+          <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>
+          <a data-basemap-credit href="https://versatiles.org/" target="_blank" rel="noopener noreferrer">VersaTiles</a>
+          <a data-basemap-credit href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>
+          <a data-terrain-credit href="https://mapterhorn.com/attribution" target="_blank" rel="noopener noreferrer">© Mapterhorn</a>
+        </span>
+      </div>
+    </footer>
+    <noscript><p class="footprints-noscript">启用 JavaScript 后，可以旋转地球并查看足迹与年度统计。</p></noscript>
+  </section>
+</Layout>
+
+<script>
+  // Speculative navigation must not start a second WebGL renderer in the background.
+  const start = () => import("@/lib/footprints-map").then(({ mountFootprints }) => mountFootprints());
+  if ("prerendering" in document && document.prerendering) document.addEventListener("prerenderingchange", start, { once: true });
+  else void start();
+</script>

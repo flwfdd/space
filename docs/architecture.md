@@ -24,10 +24,13 @@ Obsidian Markdown
 | `/` | `src/pages/index.astro` | 首页 |
 | `/about` | `src/pages/about.astro` | 关于页 |
 | `/gallery` | `src/pages/gallery.astro` | 照片墙与照片查看器 |
+| `/footprints` | `src/pages/footprints.astro` | 全历史足迹地球与年度汇总 |
 | `/notes` | `src/pages/notes/index.astro` | 按更新时间排序的笔记列表 |
 | `/notes/[...id]` | `src/pages/notes/[...id].astro` | 笔记正文、封面、日期和目录 |
 
 `src/layouts/Layout.astro` 提供页面元信息、主题初始化和整体布局。`NotesLayout.astro` 增加笔记目录、大纲及移动端抽屉。
+
+`Layout.astro` 的 `immersive` 选项为足迹页提供全宽布局，保留全站导航、字体与设计 token，省略页脚。该选项不定义独立主题。足迹地图按需加载 MapLibre，空间数据在本地跨年聚合为 r7 并分级封顶，不公开位置对应的年份；年份按钮只切换记录点总数与里程。`footprints-basemap.ts` 在本地地球可用后增加 VersaTiles 的矢量底图与按需地形，远程服务不可用时保留本地轮廓；导入、地理资源和发布说明见 [footprints.md](footprints.md)。
 
 ## 客户端交互
 
@@ -65,5 +68,5 @@ type NoteNode =
 - `src/styles/image-viewer.css` 随共用查看器按需加载，统一控件外观与过渡；`media-lightbox.css` 仅负责笔记预览的页面模糊背景。
 - `MarkdownContent.astro` 负责正文容器、复制按钮和媒体预览初始化。
 - `public/` 中的文件原样复制到构建产物，小型 SVG 同时作为 `astro-icon` 的本地图标。
-- 栅格图片、音频、视频和 PDF 默认使用 Git LFS；`public/**/*.svg`（包括子目录）直接由 Git 管理。
+- 栅格图片、音频、视频和 PDF 默认使用 Git LFS；公开足迹数据 `public/footprints/annual.json` 和国家轮廓 `public/maps/countries-50m.json` 也使用 Git LFS。`public/**/*.svg`（包括子目录）直接由 Git 管理。
 - 路径别名 `@/*` 指向 `src/*`。

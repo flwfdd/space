@@ -39,5 +39,6 @@ Agent 修改本仓库前，先阅读本文件和与任务相关的 `docs/` 文�
 | [docs/authoring.md](docs/authoring.md) | 新增或修改 Obsidian 笔记、frontmatter、时间或媒体 |
 | [docs/markdown.md](docs/markdown.md) | 修改 Sätteri、KaTeX、Mermaid、图片或外链处理 |
 | [docs/maintenance.md](docs/maintenance.md) | 安装、升级依赖，处理构建警告或完善验证 |
+| [docs/footprints.md](docs/footprints.md) | 修改足迹地球、年度聚合或足迹导入与发布流程 |
 
 `README.md` 面向使用者，保留项目介绍和快速开始；本文件只保留 Agent 的工作入口，细节以 `docs/` 为准。

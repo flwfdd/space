@@ -10,5 +10,6 @@
 | [authoring.md](authoring.md) | Obsidian frontmatter、发布、时间和媒体约定 |
 | [markdown.md](markdown.md) | Sätteri 插件体系、公式、Mermaid、图片和外链 |
 | [maintenance.md](maintenance.md) | 开发命令、依赖约束、构建警告和升级检查 |
+| [footprints.md](footprints.md) | 足迹地球、年度数据导入、隐私设置与发布 |
 
 修改代码时，应同时更新受影响的文档。文档描述当前实现，不保存临时任务进度、审查记录或聊天摘要。
